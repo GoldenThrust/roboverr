@@ -1,10 +1,9 @@
 import asset from "./assetLoader.js";
 import { drawSpriteFrame, getFrameDuration } from "./utils.js";
-
 export default class SpriteAnimation {
-    constructor({ ctx, spritesheet, x, y, cutWidth, cutHeight, scaleWidth, scaleHeight, numberOfRows, numberOfColumns, fps, maxIterations = 0, hide = false, color = "black" }) {
+    constructor({ ctx, spritesheet, x = innerWidth, y = innerHeight, cutWidth, cutHeight, scaleWidth = 1, scaleHeight = 1, numberOfRows = 1, numberOfColumns, fps = 30, maxIterations = 0, hide = false, color = "black", row = null }) {
         this.ctx = ctx;
-        this.spritesheet = null;
+        this.spritesheet = asset[spritesheet] ?? null;
         this.x = x;
         this.y = y;
         this.cutWidth = cutWidth;
@@ -27,77 +26,53 @@ export default class SpriteAnimation {
         this.mask.width = this.scaleWidth;
         this.mask.height = this.scaleHeight;
         this.mctx = this.mask.getContext('2d');
-        this.#loadImage(spritesheet);
+        this.row = row;
+        document.addEventListener("assetsloaded", (e) => {
+            const { assets } = e.detail;
+            this.spritesheet = assets[spritesheet];
+        });
     }
 
-    #loadImage(spritesheet) {
-        if (!asset.assetsLoaded) {
-            setTimeout(() => {
-                this.#loadImage(spritesheet);
-            }, 1000);
-        } else {
-            this.spritesheet = asset[spritesheet];
-        }
-    }
+    animate(t, flip = 1) {
+        this.flip = flip;
 
-    setSpritesheet(spritesheet) {
-        this.spritesheet = asset[spritesheet];
-    }
-    animate(t, flip) {
-        this.flip = flip ?? this.flip;
+        if (!this.spritesheet) return;
 
         if (this.state === 'running') {
-            const duration = getFrameDuration(t, this.lastUpdate, this.fps);
-
-            if (duration) {
+            if (getFrameDuration(t, this.lastUpdate, this.fps)) {
                 this.currentFrame = (this.currentFrame + 1) % this.totalFrames;
-                this.lastUpdate = duration;
-            }
+                this.lastUpdate = t;
 
-            if (this.maxIterations !== 0 && ((this.currentFrame + 1) >= this.totalFrames)) {
-                this.numberOfIterations++;
-            }
+                if (this.maxIterations !== 0 && this.currentFrame === this.totalFrames - 1) {
+                    this.numberOfIterations++;
+                }
 
-            if (this.numberOfIterations >= this.maxIterations && this.maxIterations !== 0) {
-                // this.state = 'paused';
+                if (this.maxIterations !== 0 && this.numberOfIterations >= this.maxIterations) {
+                    // this.state = 'paused';
+                }
             }
         }
-
+        
         const column = this.currentFrame % this.numberOfColumns;
-        const row = Math.floor(this.currentFrame / this.numberOfColumns);
-
-        if (this.spritesheet && asset.assetsLoaded && (this.state === 'running' || this.hide !== true)) {
-            this.mctx.clearRect(0, 0, this.mask.width, this.mask.height);
-
-            // Fill the mask with a solid color
+        const row = this.row ?? Math.floor(this.currentFrame / this.numberOfColumns);
+        
+        if (this.state === 'running' || this.hide !== true) {
             this.mctx.fillStyle = this.color;
             this.mctx.fillRect(0, 0, this.mask.width, this.mask.height);
-
-            // Cut the shape of the sprite from the color block
+            
             this.mctx.globalCompositeOperation = 'destination-in';
-            drawSpriteFrame(
-                this.mctx,
-                this.spritesheet,
-                column,
-                row,
-                0, 0,
-                this.cutWidth,
-                this.cutHeight,
-                this.scaleWidth,
-                this.scaleHeight
-            );
-
-            // Reset mask context blend mode
+            drawSpriteFrame(this.mctx, this.spritesheet, column, row, 0, 0, this.cutWidth, this.cutHeight, this.scaleWidth, this.scaleHeight);
             this.mctx.globalCompositeOperation = 'source-over';
-
-            // Draw to main canvas
+            
             this.ctx.save();
             this.ctx.scale(this.flip, 1);
             const drawX = this.flip === -1 ? -(this.x + this.scaleWidth) : this.x;
-
+            
             this.ctx.drawImage(this.mask, drawX, this.y);
+
             this.ctx.globalCompositeOperation = 'multiply';
             drawSpriteFrame(this.ctx, this.spritesheet, column, row, drawX, this.y, this.cutWidth, this.cutHeight, this.scaleWidth, this.scaleHeight);
+            this.ctx.globalCompositeOperation = 'source-over';
             this.ctx.restore();
         }
     }

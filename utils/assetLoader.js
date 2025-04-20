@@ -4,6 +4,7 @@ class Assets {
     constructor() {
         this.assetsLoaded = false;
     }
+
     async loadImages(images) {
         const entries = await Promise.all(
             Object.entries(images).map(async ([name, url]) => {
@@ -12,15 +13,19 @@ class Assets {
             })
         );
 
-        entries.map(([name, image]) => {
+        for (const [name, image] of entries) {
             this[name] = image;
-        });
+        }
     }
 
     async preload(callBack) {
         await callBack(this);
         this.assetsLoaded = true;
-        console.log("Assets preloaded successfully!");
+
+        const event = new CustomEvent("assetsloaded", {
+            detail: { loaded: true, assets: this }
+        });
+        document.dispatchEvent(event);
     }
 }
 

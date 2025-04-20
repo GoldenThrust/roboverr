@@ -3,6 +3,7 @@ import Platform from "./characters/platform.js";
 const whiteBoard = document.querySelectorAll('canvas');
 export const canvas = {}
 export const ctxs = {};
+export const scale = 0.2;
 
 
 whiteBoard.forEach((cs) => {
@@ -20,4 +21,26 @@ addEventListener('resize', () => {
     })
 })
 
-export const land = new Platform(-50000, innerHeight, 100000, innerHeight * 2, null, "Land");
+export const land = new Platform({
+    x: -(innerWidth * scale) * 100,
+    y: innerHeight,
+    width: (innerWidth * scale) * 200,
+    height: (innerHeight * scale) * 100,
+    cutWidth: 50,
+    cutHeight: 50,
+    id: 'land',
+    img: 'terrain'});
+
+export const background = new Platform({
+    x: -10000,
+    y: -10000,
+    width: 100000,
+    height: 100000,
+    cutWidth: 60,
+    cutHeight: 60,
+    id: 'background',
+    img: 'bg'});
+
+export function generateUniqueId() {
+    return 'id-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+}

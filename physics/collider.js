@@ -11,7 +11,21 @@ class Collider {
 
     checkCollisons() {
         this.colliders.forEach((collider) => {
-            checkCollision(collider.obj1, collider.obj2, collider.runCode)
+            checkCollision(collider.obj1, collider.obj2, collider.runCode, collider.key)
+        })
+    }
+
+    removeCollider(key) {
+        this.colliders = this.colliders.filter(c => c.key !== key);
+    }
+
+    multipleCheckCollisions(collider) {
+        collider.obj1.forEach((o1) => {
+            collider.obj2.forEach((o2) => {
+                checkCollision(o1, o2, (o1, o2) => {
+                    o1.runCode(o1, o2);
+                })
+            })
         })
     }
 }

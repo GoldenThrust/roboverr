@@ -1,22 +1,61 @@
 import { ctxs } from "../setup.js";
+import { drawSpriteFrame } from "../utils/utils.js";
 
 class Platform {
-    constructor(x, y, width, height, img = null, id = "Platform") {
+    constructor({ x, y, width, height, cutWidth, cutHeight, img = null, id = "Platform", column = 0, row = 0 }) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.cutWidth = cutWidth || width;
+        this.cutHeight = cutHeight || height;
         this.color = "blue";
         this.id = id;
-        this.assets = img ? assets[img] : null;
+        this.spritesheet = null;
+
+        // Create a mask canvas for pattern
+        this.mask = document.createElement('canvas');
+        this.mctx = this.mask.getContext('2d');
+
+        document.addEventListener("assetsloaded", (e) => {
+            const { assets } = e.detail;
+            this.spritesheet = img ? assets[img] : null;
+
+            if (this.spritesheet) {
+                // Set canvas size to total sprite region
+                const totalWidth = this.cutWidth * column;
+                const totalHeight = this.cutHeight * row;
+
+                this.mask.width = this.cutWidth;
+                this.mask.height = this.cutHeight;
+
+                const frameX = column * this.cutWidth;
+                const frameY = row * this.cutHeight;
+                
+                this.mctx.drawImage(
+                    this.spritesheet,
+                    frameX, frameY,
+                    this.cutWidth, this.cutHeight,
+                    0, 0,
+                    this.cutWidth, this.cutHeight
+                );
+                
+            }
+        });
     }
+
     draw() {
-        if (this.assets) {
-            ctxs['bgcs'].drawImage(this.assets, this.x, this.y, this.width, this.height);
+        const ctx = ctxs['bgcs'];
+        if (!ctx) return;
+
+        if (this.spritesheet) {
+            const pattern = ctx.createPattern(this.mask, 'repeat');
+            ctx.fillStyle = pattern;
         } else {
-            ctxs['bgcs'].fillStyle = this.color;
-            ctxs['bgcs'].fillRect(this.x, this.y, this.width, this.height);
+            ctx.fillStyle = this.color;
         }
+
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
     update(t) {

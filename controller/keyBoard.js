@@ -6,7 +6,6 @@ class KeyBoard {
 
     addEventListener('keyup', (e) => {
         this[e.key] = false;
-        
     });
   }
 

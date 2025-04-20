@@ -15,7 +15,6 @@ export function getRandomNZeroInt(min, max) {
   return random;
 }
 
-
 export function distanceBetween(obj, obj2) {
   return [Math.sqrt((obj.x - obj2.x) ** 2 + (obj.y - obj2.y) ** 2), (obj.x - obj2.x), (obj.y - obj2.y)];
 }
@@ -88,7 +87,7 @@ function getEdges(vertices) {
 }
 
 
-export function checkCollision(obj1, obj2, runCode = () => { }) {
+export function checkCollision(obj1, obj2, runCode = () => { },key = 0) {
   const vertices1 = obj1.getVertices();
   const vertices2 = obj2.getVertices();
 
@@ -103,7 +102,8 @@ export function checkCollision(obj1, obj2, runCode = () => { }) {
       return false;
     }
   }
-  runCode(obj1, obj2);
+
+  runCode(obj1, obj2, key);
   return true;
 }
 
@@ -171,4 +171,14 @@ export function loadImage(url) {
     img.onload = () => resolve(img);
     img.onerror = (error) => reject(error);
   });
+}
+
+export function loadAsset(spritesheet) {
+    if (!asset.assetsLoaded) {
+        setTimeout(() => {
+            loadImage(spritesheet);
+        }, 1000);
+    } else {
+        return asset[spritesheet];
+    }
 }
