@@ -8,9 +8,11 @@ export function drawLives(ctx, health, lives) {
     }
 }
 export function drawScore(ctx, score) {
-    ctx.font = "20px Arial";
+    ctx.font = "16px monospace";
     ctx.fillStyle = "white";
-    ctx.fillText(`Score: ${score}`, innerWidth - 200, 50);
+    const text = `Score: ${score}`;
+    const textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, ctx.canvas.width - textWidth - 10, 20);
 }
 export function drawLevel(ctx, level) {
     ctx.font = "20px Arial";

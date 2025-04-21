@@ -21,17 +21,24 @@ export const player = new Player(
   "Player"
 );
 
+let spawnNumber = 5;
+let dxFactor = 1;
+let fireRateFactor = 1;
+let lastIncrementTime = 0;
+
 export let enemies = [];
 
 
 // 🧟‍♂️ Initiate enemies with shuffled names
 function initiateEnemies(count = 1) {
   const enemyNames = Object.keys(enemySpriteRows);
+
   for (let i = 0; i < count; i++) {
     const name = enemyNames[Math.floor(Math.random() * enemyNames.length)];
-    const x = [1, -1][Math.round(Math.random())] *  getRandomInt(0, maxDistance /3);
+    const x = [1, -1][Math.round(Math.random())] * getRandomInt(0, maxDistance / 3);
     const y = Math.round(Math.random() * 10) * -innerHeight * 10;
     const uniqueId = generateUniqueId();
+
     const enemy = new Enemy({
       name,
       x,
@@ -39,31 +46,34 @@ function initiateEnemies(count = 1) {
       numberOfColumns: 7,
       cutWidth: 24,
       cutHeight: 32,
-    })
+      fireRateFactor,
+      dxFactor,
+    });
+
     enemies.push(enemy);
+
     collider.addCollider({
       obj1: enemy,
       obj2: land,
       key: uniqueId,
       runCode: (e, l, key) => {
-        console.log('collider exists', key)
         if (!e.isAlive()) {
           collider.removeCollider(key);
           return;
-        };
+        }
         e.dy = 0;
         e.y = l.y - e.height;
         e.isOnGround = true;
       },
-    })
+    });
   }
 }
 
+// 🕒 Spawn control
 setInterval(() => {
-  if (enemies.length > 5) return;
-  initiateEnemies(10)
+  if (enemies.length >= spawnNumber) return;
+  initiateEnemies(spawnNumber - enemies.length);
 }, 1000);
-
 
 
 // 💥 Add collision logic
@@ -82,6 +92,22 @@ function animate(t) {
   if (!player.isAlive()) {
     window.location.href = '/gameover.html';
     return;
+  }
+
+  if (t - lastIncrementTime >= 10000) {
+    spawnNumber++;
+    fireRateFactor += 0.01;
+    dxFactor += 0.01;
+
+    enemies.forEach((e) => {
+      e.fireRate = Math.max(100, e.fireRate - 10);
+      e.attackRange = Math.max(1000, e.attackRange + 1);
+      e.gunRange = Math.max(5000, e.gunRange + 1);
+      e.dx += 0.5;
+    });
+
+    lastIncrementTime = t; // 🔄 Reset last time
+    console.log("✅ 10s Passed: Stats incremented");
   }
   scene[0].attachToPlayer(player);
   scene[1].attachToPlayer(player);
@@ -135,4 +161,4 @@ function animate(t) {
   requestAnimationFrame(animate);
 })();
 
-initiateEnemies(2)
+initiateEnemies(20)

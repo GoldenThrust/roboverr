@@ -7,7 +7,7 @@ import { generateUniqueId } from "../utils/utils.js";
 import Gun from "../weapons/gun.js";
 
 export default class Enemy {
-    constructor({ name, health = 100, attackPower = null, x, y, cutWidth, cutHeight, numberOfColumns = 8, id = "enemy", flip = 1, scaleWidth = 11, scaleHeight = 10 }) {
+    constructor({ name, health = 100, attackPower = null, x, y, cutWidth, cutHeight, numberOfColumns = 8, id = "enemy", flip = 1, scaleWidth = 11, scaleHeight = 10, fireRateFactor = 1, dxFactor = 1 }) {
         this.name = name;
         this.health = health;
         this.attackPower = attackPower;
@@ -22,14 +22,15 @@ export default class Enemy {
         this.y = (y - this.height) + 15;
         this.lastUpdate = 0;
         const row = enemySpriteRows[name] ?? 0;
-        this.dx = row > 5 ? row / 5 : row;
+        this.dx = (row > 5 ? row / 5 : row) * dxFactor;
         this.attackRange = Math.min(Math.max(row * 100, 300), 800);
         this.shootedWeapon = [];
         this.lastFire = 0;
-        this.fireRate = this.attackRange;
+        this.fireRate = this.attackRange * fireRateFactor;
         this.gravity = 0.3;
         this.dy = 0;
         this.isOnGround = false;
+        this.gunRange = this.attackRange * 10;
 
         this.spritesheet = new SpriteAnimation({
             ctx: ctxs["mgcs"],
@@ -75,7 +76,7 @@ export default class Enemy {
         if (t - this.lastFire < this.fireRate) return;
         this.lastFire = t;
         this.fireWeapon(
-            new Gun({ damage: 10, range: 5000, x: this.x + this.width / 1.2, y: this.y + this.height / 2, speed: this.flip * (5 + Math.abs(this.dx)) })
+            new Gun({ damage: 10, range: this.gunRange, x: this.x + this.width / 1.2, y: this.y + this.height / 2, speed: this.flip * (10 + Math.abs(this.dx)) })
         );
     }
 
@@ -92,7 +93,8 @@ export default class Enemy {
                     return;
                 w.active = false;
 
-                p.takeDamage(w.damage);
+                if (this && this?.isAlive())
+                    p.takeDamage(w.damage);
                 collider.removeCollider(key);
                 if (Math.ceil((p.health / p.lives) * 10) < p.previousHealth) {
                     p.damage = true;

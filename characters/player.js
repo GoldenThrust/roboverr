@@ -170,6 +170,7 @@ class Player {
 
 
     takeDamage(damage) {
+        console.log('damaged')
         this.health = Math.max(this.health - damage, 0);
     }
 
