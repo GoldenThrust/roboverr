@@ -1,9 +1,11 @@
 import keyBoard from "../controller/keyBoard.js";
 import { enemies } from "../main.js";
 import collider from "../physics/collider.js";
-import { ctxs, generateUniqueId } from "../setup.js";
+import { ctxs, maxDistance } from "../setup.js";
 import SpriteAnimation from "../utils/spriteAnimation.js";
+import { generateUniqueId } from "../utils/utils.js";
 import Gun from "../weapons/gun.js";
+
 
 class Player {
     constructor(x, y, spritesNames = { move: null, jump: null, idle: null, crouch: null }, scalew = 1, scaleh = 1, color = "blue", id = "Player") {
@@ -12,6 +14,7 @@ class Player {
         }
 
         this.health = 1000;
+        this.lives = 1000;
         this.id = id;
         this.x = x;
         this.y = y;
@@ -25,11 +28,16 @@ class Player {
         this.spritesNames = spritesNames;
         this.controller = keyBoard;
         this.width = 207 * scalew;
-        this.height = 290 * scaleh;
+        this.height = 292 * scaleh;
         this.shootedWeapon = [];
         this.lastUpdate = 0;
         this.lastFire = 0;
         this.fireRate = 100;
+        this.score = 0;
+        this.damage = false;
+        this.invisible = false;
+        this.previousHealth = 10;
+        this.color = color;
 
         const baseProps = {
             ctx: ctxs['mgcs'],
@@ -79,7 +87,7 @@ class Player {
         this.dy += this.gravity;
         this.y += this.dy;
 
-        const newProps = { x: this.x, y: this.y };
+        const newProps = { x: this.x, y: this.y, color: this.invisible ? "black" : this.color};
         this.running.setProperties(newProps);
         this.jumpAnim.setProperties(newProps);
         this.standing.setProperties(newProps);
@@ -123,13 +131,15 @@ class Player {
             if (this.standing.state === 'paused') this.standing.restart();
             this.standing.animate(t, this.flip);
         }
+
+        this.x = Math.max(-maxDistance/3, Math.min(this.x, maxDistance/3 - this.width));
     }
 
     shootGun(t) {
         if (t - this.lastFire < this.fireRate) return;
         this.lastFire = t;
         this.fireWeapon(
-            new Gun(10, 5000, this.x + this.width / 2, this.y + this.height / 2.5, this.flip * (20 + Math.abs(this.dx)))
+            new Gun({ damage: 10, range: 8000, x: this.x + this.width / 2, y: this.y + this.height / 2.5, speed: this.flip * (20 + Math.abs(this.dx)), color: "black" })
         );
     }
 
@@ -145,6 +155,7 @@ class Player {
                 runCode: (w, en, key) => {
                     if (!w.active || !en.isAlive())
                         return;
+                    
                     w.active = false;
                     en.takeDamage(w.damage);
                     collider.removeCollider(key);
@@ -156,8 +167,8 @@ class Player {
     isAlive() {
         return this.health > 0;
     }
-    
-        
+
+
     takeDamage(damage) {
         this.health = Math.max(this.health - damage, 0);
     }

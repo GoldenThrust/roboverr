@@ -2,15 +2,15 @@
 import { ctxs } from "../setup.js";
 
 export default class Gun {
-    constructor(damage, range, x, y, speed = 10) {
+    constructor({damage, range, x, y, speed = 10, color = "red"}) {
         this.damage = damage;
         this.range = range;
         this.x = x;
         this.startPoint = x;
         this.y = y;
         this.width = 10;
-        this.height = 5;
-        this.color = "red";
+        this.height = 10;
+        this.color = color;
         this.speed = speed;
         this.active = true;
     }

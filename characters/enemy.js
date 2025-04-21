@@ -1,8 +1,9 @@
 import { player } from "../main.js";
 import collider from "../physics/collider.js";
-import { ctxs, generateUniqueId } from "../setup.js";
+import { ctxs } from "../setup.js";
 import { enemySpriteRows } from "../utils/constants.js";
 import SpriteAnimation from "../utils/spriteAnimation.js";
+import { generateUniqueId } from "../utils/utils.js";
 import Gun from "../weapons/gun.js";
 
 export default class Enemy {
@@ -26,6 +27,9 @@ export default class Enemy {
         this.shootedWeapon = [];
         this.lastFire = 0;
         this.fireRate = this.attackRange;
+        this.gravity = 0.3;
+        this.dy = 0;
+        this.isOnGround = false;
 
         this.spritesheet = new SpriteAnimation({
             ctx: ctxs["mgcs"],
@@ -44,6 +48,8 @@ export default class Enemy {
     }
 
     update(t, player) {
+        this.dy += this.gravity;
+        this.y += this.dy;
         this.shootedWeapon = this.shootedWeapon.filter((weapon) => {
             weapon.update();
             weapon.draw();
@@ -57,10 +63,11 @@ export default class Enemy {
             else if (this.x > player.x) this.move(-this.dx, 0);
         } else {
             this.shootGun(t);
-            this.spritesheet.pause();
+            // this.spritesheet.pause();
         }
 
         this.setFlip(this.x < player.x ? 1 : -1);
+        this.spritesheet.setProperties({ x: this.x, y: this.y });
     }
 
 
@@ -68,7 +75,7 @@ export default class Enemy {
         if (t - this.lastFire < this.fireRate) return;
         this.lastFire = t;
         this.fireWeapon(
-            new Gun(10, 1000, this.x + this.width / 1.2, this.y + this.height / 2, this.flip * (5 + Math.abs(this.dx)))
+            new Gun({ damage: 10, range: 5000, x: this.x + this.width / 1.2, y: this.y + this.height / 2, speed: this.flip * (5 + Math.abs(this.dx)) })
         );
     }
 
@@ -81,11 +88,27 @@ export default class Enemy {
             obj2: player,
             key: colliderKey,
             runCode: (w, p, key) => {
-                if (!w.active || !p.isAlive())
+                if (!w.active || !p.isAlive() || p.damage)
                     return;
                 w.active = false;
+
                 p.takeDamage(w.damage);
                 collider.removeCollider(key);
+                if (Math.ceil((p.health / p.lives) * 10) < p.previousHealth) {
+                    p.damage = true;
+                    p.invisible = true;
+                    p.previousHealth = Math.ceil((p.health / p.lives) * 10);
+
+                    const intervalID = setInterval(() => {
+                        p.invisible = !p.invisible;
+                    }, 100);
+
+                    setTimeout(() => {
+                        clearInterval(intervalID);
+                        p.damage = false;
+                        p.invisible = false;
+                    }, 2000);
+                }
             },
         });
     }

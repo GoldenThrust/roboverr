@@ -182,3 +182,7 @@ export function loadAsset(spritesheet) {
         return asset[spritesheet];
     }
 }
+
+export function generateUniqueId() {
+  return 'id-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+}

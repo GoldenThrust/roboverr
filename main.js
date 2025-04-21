@@ -1,11 +1,11 @@
 import Player from "./characters/player.js";
-import { background, ctxs, generateUniqueId, land, scale } from "./setup.js";
+import { background, land, maxDistance, scale, scene } from "./setup.js";
 import collider from "./physics/collider.js";
 import asset from "./utils/assetLoader.js";
-import { randomColor } from "./utils/utils.js";
+import { generateUniqueId, getRandomInt, randomColor } from "./utils/utils.js";
 import { enemySpriteRows } from "./utils/constants.js";
 import Enemy from "./characters/enemy.js";
-import { drawLives } from "./utils/game.js";
+import { drawLives, drawScore } from "./utils/game.js";
 // 🎮 Create player
 export const player = new Player(
   innerWidth / 2,
@@ -21,7 +21,6 @@ export const player = new Player(
   "Player"
 );
 
-
 export let enemies = [];
 
 
@@ -30,28 +29,41 @@ function initiateEnemies(count = 1) {
   const enemyNames = Object.keys(enemySpriteRows);
   for (let i = 0; i < count; i++) {
     const name = enemyNames[Math.floor(Math.random() * enemyNames.length)];
-    const x = [1, -1][Math.round(Math.random())] * (innerWidth * scale) * 20;
-    const y = innerHeight;
-
-    enemies.push(
-      new Enemy({
-        name,
-        x,
-        y,
-        numberOfColumns: 7,
-        cutWidth: 24,
-        cutHeight: 32,
-      })
-    );
+    const x = [1, -1][Math.round(Math.random())] *  getRandomInt(0, maxDistance /3);
+    const y = Math.round(Math.random() * 10) * -innerHeight * 10;
+    const uniqueId = generateUniqueId();
+    const enemy = new Enemy({
+      name,
+      x,
+      y,
+      numberOfColumns: 7,
+      cutWidth: 24,
+      cutHeight: 32,
+    })
+    enemies.push(enemy);
+    collider.addCollider({
+      obj1: enemy,
+      obj2: land,
+      key: uniqueId,
+      runCode: (e, l, key) => {
+        console.log('collider exists', key)
+        if (!e.isAlive()) {
+          collider.removeCollider(key);
+          return;
+        };
+        e.dy = 0;
+        e.y = l.y - e.height;
+        e.isOnGround = true;
+      },
+    })
   }
 }
 
 setInterval(() => {
   if (enemies.length > 5) return;
-  initiateEnemies(5)
+  initiateEnemies(10)
 }, 1000);
 
-initiateEnemies(2)
 
 
 // 💥 Add collision logic
@@ -67,36 +79,44 @@ collider.addCollider({
 
 // 🔁 Game loop
 function animate(t) {
-  if (!player.isAlive())  {
-
+  if (!player.isAlive()) {
+    window.location.href = '/gameover.html';
     return;
   }
-  ["mgcs", "fgcs", "bgcs"].forEach((cs) => {
-    const ctx = ctxs[cs];
-    ctx.canvas.width = innerWidth;
-    ctx.save();
-    ctx.translate(innerWidth / 2, innerHeight / 2);
-    ctx.scale(scale, scale);
-    ctx.translate(-innerWidth / 2, -innerHeight / 2);
+  scene[0].attachToPlayer(player);
+  scene[1].attachToPlayer(player);
+  scene[2].attachToPlayer(player);
+
+  scene[0]?.animate({
+    animateInScene: () => {
+      background.draw();
+      land.draw();
+    }
+  })
+  scene[1]?.animate({
+    animateInScene: () => {
+      enemies.forEach((e) => {
+        e.draw(t);
+        e.update(t, player);
+      });
+      player.update(t);
+    }
+  })
+
+  scene[2]?.animate({
+    animateOutScene:
+      (ctx) => {
+        drawLives(ctx, player.health, player.lives)
+        drawScore(ctx, player.score);
+      }
+  })
+
+  enemies = enemies.filter((e) => {
+    if (!e.isAlive()) player.score += 1;
+    return e.isAlive()
   });
-  enemies = enemies.filter((e) => e.isAlive());
 
   collider.checkCollisons();
-  background.draw();
-  land.draw();
-  player.update(t);
-
-  enemies.forEach((e) => {
-    e.draw(t);
-    e.update(t, player);
-  });
-
-  ["mgcs", "fgcs", "bgcs"].forEach((cs) => {
-    const ctx = ctxs[cs];
-    ctx.restore();
-  });
-
-  drawLives(ctxs["mgcs"], player.health);
   requestAnimationFrame(animate);
 }
 
@@ -114,3 +134,5 @@ function animate(t) {
   });
   requestAnimationFrame(animate);
 })();
+
+initiateEnemies(2)

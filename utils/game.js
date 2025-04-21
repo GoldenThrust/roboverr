@@ -1,21 +1,21 @@
-export function drawLives(ctx, lives) {
+export function drawLives(ctx, health, lives) {
     ctx.font = "20px Arial";
     ctx.fillStyle = "white";
-    const part = lives/ 100;
+    const ratio = Math.ceil((health / lives) * 10);
     ctx.font = "10px Arial";
-    for (let i = 0; i < Math.ceil(part); i++) {     
+    for (let i = 0; i < ratio; i++) {     
         ctx.fillText("❤️", 5 + i * 20, 15);
     }
 }
 export function drawScore(ctx, score) {
     ctx.font = "20px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText(`Score: ${score}`, 10, 50);
+    ctx.fillText(`Score: ${score}`, innerWidth - 200, 50);
 }
 export function drawLevel(ctx, level) {
     ctx.font = "20px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText(`Level: ${level}`, 10, 80);
+    ctx.fillText(`Level: ${level}`, 10, 10);
 }
 export function drawGameOver(ctx) {
     ctx.font = "50px Arial";
