@@ -1,11 +1,11 @@
 import asset from "./assetLoader.js";
 import { drawSpriteFrame, getFrameDuration } from "./utils.js";
 export default class SpriteAnimation {
-    constructor({ ctx, spritesheet, x = innerWidth, y = innerHeight, cutWidth, cutHeight, scaleWidth = 1, scaleHeight = 1, numberOfRows = 1, numberOfColumns, fps = 30, maxIterations = 0, hide = false, color = "black", row = null }) {
+    constructor({ ctx, spritesheet, x , y, cutWidth, cutHeight, scaleWidth = 1, scaleHeight = 1, numberOfRows = 1, numberOfColumns, fps = 30, maxIterations = 0, hide = false, color = "black", row = null }) {
         this.ctx = ctx;
         this.spritesheet = asset[spritesheet] ?? null;
-        this.x = x;
-        this.y = y;
+        this.x = x ?? 0;
+        this.y = y ?? this.ctx.canvas.height/2;
         this.cutWidth = cutWidth;
         this.cutHeight = cutHeight;
         this.scaleWidth = cutWidth * scaleWidth;

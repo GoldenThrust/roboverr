@@ -2,6 +2,7 @@ import keyBoard from "../controller/keyBoard.js";
 import { enemies } from "../main.js";
 import collider from "../physics/collider.js";
 import { ctxs, maxDistance } from "../setup.js";
+import memory from "../utils/memory.js";
 import SpriteAnimation from "../utils/spriteAnimation.js";
 import { generateUniqueId } from "../utils/utils.js";
 import Gun from "../weapons/gun.js";
@@ -38,6 +39,7 @@ class Player {
         this.invisible = false;
         this.previousHealth = 10;
         this.color = color;
+        this.moving = false;
 
         const baseProps = {
             ctx: ctxs['mgcs'],
@@ -87,7 +89,7 @@ class Player {
         this.dy += this.gravity;
         this.y += this.dy;
 
-        const newProps = { x: this.x, y: this.y, color: this.invisible ? "black" : this.color};
+        const newProps = { x: this.x, y: this.y, color: this.invisible ? "black" : this.color };
         this.running.setProperties(newProps);
         this.jumpAnim.setProperties(newProps);
         this.standing.setProperties(newProps);
@@ -106,33 +108,40 @@ class Player {
             this.jumpAnim.restart();
         }
 
-        let moving = false;
+        this.moving = false;
 
         if (keys['ArrowLeft']) {
             this.dx = -10;
             this.x += this.dx;
             this.flip = -1;
-            moving = true;
+            this.moving = true;
         } else if (keys['ArrowRight']) {
             this.dx = 10;
             this.x += this.dx;
             this.flip = 1;
-            moving = true;
+            this.moving = true;
         } else {
             this.dx = 0;
         }
 
-        if (!this.isOnGround && this.jumpAnim.state === 'running') {
-            this.jumpAnim.animate(t, this.flip);
-        } else if (moving) {
-            if (this.running.state === 'paused') this.running.restart();
-            this.running.animate(t, this.flip);
-        } else {
+        this.x = Math.max(-maxDistance / 3, Math.min(this.x, maxDistance / 3 - this.width));
+    }
+
+    draw(t) {
+        if (memory.getPause()) {
             if (this.standing.state === 'paused') this.standing.restart();
             this.standing.animate(t, this.flip);
+        } else {
+            if (!this.isOnGround && this.jumpAnim.state === 'running') {
+                this.jumpAnim.animate(t, this.flip);
+            } else if (this.moving) {
+                if (this.running.state === 'paused') this.running.restart();
+                this.running.animate(t, this.flip);
+            } else {
+                if (this.standing.state === 'paused') this.standing.restart();
+                this.standing.animate(t, this.flip);
+            }
         }
-
-        this.x = Math.max(-maxDistance/3, Math.min(this.x, maxDistance/3 - this.width));
     }
 
     shootGun(t) {
@@ -155,7 +164,7 @@ class Player {
                 runCode: (w, en, key) => {
                     if (!w.active || !en.isAlive())
                         return;
-                    
+
                     w.active = false;
                     en.takeDamage(w.damage);
                     collider.removeCollider(key);
@@ -170,8 +179,8 @@ class Player {
 
 
     takeDamage(damage) {
-        console.log('damaged')
         this.health = Math.max(this.health - damage, 0);
+        memory.updateLives(this.health);
     }
 
     getVertices() {
@@ -183,5 +192,6 @@ class Player {
         ];
     }
 }
+
 
 export default Player;

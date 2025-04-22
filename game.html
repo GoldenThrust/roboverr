@@ -1,15 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoboVerr</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="main.js" type="module"></script>
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/game.css">
+    <script src="./assets/js/main.js" type="module"></script>
 </head>
+
 <body>
+    <aside>
+        <div id="pauseMenu" class="hidden">
+            <button id="resumeButton"><img src="./assets/img/play.svg" alt="Resume Button"></button>
+            <div>
+                <button class="restartButton"><img src="./assets/img/restart.svg" alt="Pause Button"></button>
+                <button class="menuButton"><img src="./assets/img/exit.svg" alt="Pause Button"></button>
+            </div>
+        </div>
+
+        <div id="gameOverMenu" class="hidden">
+            <h1>Game Over</h1>
+            <div>
+                <h2 id="gameOverScore">Score: 0</h2>
+                <div id="gameOverHighScore">New HighScore</div>
+            </div>
+            <div>
+                <button class="restartButton"><img src="./assets/img/restart.svg" alt="Pause Button"></button>
+                <button class="menuButton"><img src="./assets/img/home.svg" alt="Pause Button"></button>
+            </div>
+        </div>
+
+        <div id="gameData">
+            <div id="time">0hr 0min</div>
+            <div id="score">Score: 0</div>
+            <div id="highScore">HighScore: 0</div>
+            <div id="pauseButton"><img src="./assets/img/pause.svg" alt="Pause Button"></div>
+        </div>
+
+        <div id="gameController" class="hidden">
+            <div id="leftController" class="controller"><img src="./assets/img/left.svg" alt="Left Controller"></div>
+            <div id="rightController" class="controller"><img src="./assets/img/right.svg" alt="Right Controller"></div>
+            <div id="jumpController" class="controller"><img src="./assets/img/jump.svg" alt="Jump Controller"></div>
+            <div id="shootController" class="controller"><img src="./assets/img/gun.svg" alt="Shoot Controller"></div>
+        </div>
+    </aside>
     <canvas id="bgcs"></canvas>
     <canvas id="mgcs"></canvas>
     <canvas id="fgcs"></canvas>
 </body>
+
 </html>

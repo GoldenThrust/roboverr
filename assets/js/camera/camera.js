@@ -4,17 +4,18 @@ export default class Camera {
     constructor({
         x = 0,
         y = 0,
-        width = window.innerWidth,
-        height = window.innerHeight,
+        width,
+        height,
         scale = 1,
         ctx = ctxs['mgcs']
     }) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
         this.scale = scale;
         this.ctx = ctx;
+        this.width = width ?? ctx.canvas.width;
+        this.height = height ?? ctx.canvas.height;
+
     }
 
     setPosition(x, y) {
@@ -42,9 +43,8 @@ export default class Camera {
     animate({ animateInScene = () => { }, animateOutScene = () => { } }) {
         const { ctx, scale, x, y, width, height } = this;
 
-        // Reset canvas size and clear previous transforms
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        ctx.canvas.width = ctx.canvas.width;
+        ctx.canvas.height = ctx.canvas.height;
 
         ctx.save();
         // ctx.clearRect(0, 0, width, height);
@@ -52,6 +52,11 @@ export default class Camera {
         // Move to center, apply scale and translate according to camera position
         ctx.translate(width / 2, height / 2);
         ctx.scale(scale, scale);
+        if (window.innerHeight > window.innerWidth) {
+            ctx.rotate(Math.PI / 2);
+        } else {
+            ctx.rotate(0);
+        }
         ctx.translate(-x - width / 2, -y - height / 2);
 
         animateInScene(ctx);

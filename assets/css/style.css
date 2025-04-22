@@ -1,0 +1,95 @@
+body, html {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #080d0f;
+  overflow: hidden !important;
+}
+
+#guestGame {
+  color: rgb(187, 183, 154);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+img {
+  width: 100%;
+}
+
+#googleSignIn {
+  display: flex;
+  place-content: center;
+  place-items: center;
+  gap: 10px;
+  height: 3rem;
+  width: 20rem;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer; 
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: larger;
+  color: rgb(67, 67, 67);
+  border: none;
+  transition: all 0.5s ease-in-out;
+}
+
+#googleSignIn img {
+  width: auto;
+  height: 100%;
+}
+
+#googleSignIn:hover {
+  border-radius: 5px;
+  filter: invert(1);
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
+
+#app {
+  width: 100vh;
+  height: 100vw;
+  transform: rotate(90deg);
+  transform-origin: center center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+
+  display: flex;
+  place-content: center;
+  place-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+
+@media (orientation: landscape) {
+  #app {
+    width: 100vw;
+    height: 100vh;
+    transform: rotate(0);
+    translate: initial;
+    top: 0;
+    left: 0;
+  }
+}

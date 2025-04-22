@@ -1,0 +1,110 @@
+aside {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    overflow: hidden;
+}
+#pauseMenu, #gameOverMenu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    place-content: center;
+    place-items: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: springgreen;
+}
+
+:is(#pauseMenu, #gameOverMenu) button {
+    background-color: #af574c;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 80px;
+    transition: all 0.3s ease-in-out;
+}
+
+#pauseMenu #resumeButton {
+    width: 35vw;
+}
+
+:is(#pauseMenu, #gameOverMenu) button:hover {
+    background-color: #501414;
+    transform: scale(1.05);
+}
+
+#pauseMenu #resumeButton:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+:is(#pauseMenu, #gameOverMenu) button:active {
+    transform: scale(0.95);
+}
+
+:is(#pauseMenu, #gameOverMenu) button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #4CAF50, 0 0 10px #4CAF50, 0 0 15px #4CAF50;
+}
+
+#gameOverMenu {
+    background-color: rgba(0, 0, 0, 1);
+}
+
+#gameOverMenu div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+#gameOverMenu div:first-of-type {
+    font-size: 1.2rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-variant-caps: small-caps;
+
+    color: springgreen;
+}
+
+#gameOverMenu h1 {
+    color: white;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+#gameData {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    width: 98vw;
+    font-family: 'Courier New', Courier, monospace;
+    font-variant-caps: small-caps;
+}
+
+#gameController div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+

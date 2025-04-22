@@ -1,3 +1,6 @@
+import { gameOverHighScore, gameOverMenu, gameOverScore, pauseMenu } from "../setup.js";
+import memory from "./memory.js";
+
 export function getRandomInt(min, max) {
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
@@ -87,7 +90,7 @@ function getEdges(vertices) {
 }
 
 
-export function checkCollision(obj1, obj2, runCode = () => { },key = 0) {
+export function checkCollision(obj1, obj2, runCode = () => { }, key = 0) {
   const vertices1 = obj1.getVertices();
   const vertices2 = obj2.getVertices();
 
@@ -174,15 +177,39 @@ export function loadImage(url) {
 }
 
 export function loadAsset(spritesheet) {
-    if (!asset.assetsLoaded) {
-        setTimeout(() => {
-            loadImage(spritesheet);
-        }, 1000);
-    } else {
-        return asset[spritesheet];
-    }
+  if (!asset.assetsLoaded) {
+    setTimeout(() => {
+      loadImage(spritesheet);
+    }, 1000);
+  } else {
+    return asset[spritesheet];
+  }
 }
 
 export function generateUniqueId() {
   return 'id-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+}
+
+export function displayPauseScreen(toggle = true) {
+  memory.updatePause(toggle);
+  if (toggle) {
+    pauseMenu.classList.remove('hidden');
+    pauseMenu.classList.add('visible');
+    return;
+  }
+  pauseMenu.classList.remove('visible');
+  pauseMenu.classList.add('hidden');
+  memory.updatePause(false);
+}
+
+export function displayGameOverScreen() {
+  gameOverMenu.classList.remove('hidden');
+  gameOverMenu.classList.add('visible');
+  gameOverScore.innerText = `Score: ${memory.getScore()}`;
+  gameOverHighScore.innerText = `High Score: ${memory.getHighScore()}`;
+  memory.reset();
+}
+
+export function isMobileDevice() {
+  return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
