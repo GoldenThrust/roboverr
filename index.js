@@ -85,7 +85,7 @@ function getGoogleAuthURL() {
 app.get('/', async (req, res) => {
   let topScores = [];
   try {
-    topScores = await User.getTopScores();
+    topScores = await User.getTopScores(1,3);
   } catch (error) {
     console.error('Error fetching top scores:', error);
   }
