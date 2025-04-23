@@ -202,12 +202,31 @@ export function displayPauseScreen(toggle = true) {
   memory.updatePause(false);
 }
 
-export function displayGameOverScreen() {
+export async function displayGameOverScreen() {
   gameOverMenu.classList.remove('hidden');
   gameOverMenu.classList.add('visible');
   gameOverScore.innerText = `Score: ${memory.getScore()}`;
   gameOverHighScore.innerText = `High Score: ${memory.getHighScore()}`;
-  memory.reset();
+  localStorage.setItem('highscore', memory.getHighScore());
+  await fetch('/api/scores', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      score: memory.getScore(),
+      gameId: getGameId()
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Score saved:', data);
+    memory.reset();
+    })
+    .catch(error => {
+      console.error('Error saving score:', error);
+    });
+
 }
 
 export function isMobileDevice() {

@@ -1,4 +1,10 @@
-body, html {
+#logo {
+  width: 35vw;
+  max-width: 20rem;
+}
+
+body,
+html {
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -6,12 +12,14 @@ body, html {
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #080d0f;
   overflow: hidden !important;
 }
 
-#guestGame {
+#guestGame,
+#playGame,
+nav a {
   color: rgb(187, 183, 154);
   background-color: transparent;
   border: none;
@@ -20,7 +28,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-size: 1rem;
   font-weight: 600;
 }
@@ -49,8 +57,8 @@ img {
   width: 20rem;
   padding: 5px;
   border-radius: 5px;
-  cursor: pointer; 
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  cursor: pointer;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: larger;
   color: rgb(67, 67, 67);
   border: none;
@@ -89,7 +97,6 @@ img {
   place-content: center;
   place-items: center;
   flex-direction: column;
-  height: 100vh;
 }
 
 @media (orientation: landscape) {
@@ -103,34 +110,64 @@ img {
   }
 }
 
+.userWelcome {
+  font-size: 1rem;
+  color: white;
+  text-align: center;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-variant: small-caps;
+}
+
 .highscores {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(2, 6, 8, 0.7);
   border-radius: 10px;
-  padding: 15px;
-  margin-top: 20px;
+  padding: 0 30px;
+  margin-top: 3px;
   color: white;
   max-width: 400px;
   width: 100%;
 }
+
+.highscores h2 {
+  margin: 10px auto;
+}
+
 .highscore-item {
   display: flex;
   justify-content: space-between;
-  padding: 5px 0;
+  padding: 2px 0;
+  margin: 3px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .highscore-item.current-user {
-  background-color: rgba(255, 215, 0, 0.2);
+  background-color: rgba(94, 70, 228, 0.2);
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(114, 152, 174, 0.164);
 }
+
+#viewAllScores {
+  width: 100%;
+  margin: 10px 0;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bolder;
+  border-radius: 10px;
+  background-color: aliceblue;
+}
+
 .modal {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: none;
   position: fixed;
   z-index: 999;
-  left: 0;
-  top: 0;
+  place-content: center;
+  place-items: center;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
 }
+
 .modal-content {
   background-color: #222;
   color: white;
@@ -138,6 +175,7 @@ img {
   padding: 20px;
   width: 80%;
   max-width: 600px;
+  gap: 100px;
   border-radius: 10px;
 }
 .close {
@@ -161,14 +199,86 @@ img {
   align-items: center;
   margin-bottom: 15px;
 }
+
 nav {
-  margin-bottom: 20px;
+  text-decoration: none;
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  justify-content: space-evenly;
 }
 nav a {
-  color: white;
-  margin-right: 15px;
   text-decoration: none;
 }
+
 nav a:hover {
   text-decoration: underline;
+}
+
+/* Pagination styles */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.pagination-controls button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination-controls button:hover:not([disabled]) {
+  background-color: #555;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#pageInfo {
+  color: #ccc;
+}
+
+#all-scores-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 5px;
+  gap: 2px;
+  overflow: hidden auto;
+}
+
+#all-scores-list div {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+}
+
+#all-scores-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+#all-scores-list::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 4px;
+}
+
+#all-scores-list::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+#all-scores-list::-webkit-scrollbar-thumb:hover {
+  background: #777;
 }

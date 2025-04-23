@@ -30,7 +30,7 @@ player.health = memory.getLives();
 player.score = memory.getScore();
 
 
-let spawnNumber = 5;
+let spawnNumber = 20;
 let dxFactor = 1;
 let fireRateFactor = 1;
 let lastIncrementTime = 0;

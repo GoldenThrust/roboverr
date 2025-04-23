@@ -85,7 +85,7 @@ function getGoogleAuthURL() {
 app.get('/', async (req, res) => {
   let topScores = [];
   try {
-    topScores = await User.getTopScores(10);
+    topScores = await User.getTopScores();
   } catch (error) {
     console.error('Error fetching top scores:', error);
   }
@@ -170,7 +170,6 @@ app.get('/auth/google/callback', async (req, res) => {
 
 
 app.get('/api/auth/status', (req, res) => {
-  console.log('User authentication status:', req.isAuthenticated, req.user);
   res.json({ 
     authenticated: req.isAuthenticated, 
     user: req.user 

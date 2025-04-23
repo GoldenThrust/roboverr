@@ -4,12 +4,30 @@ class Memory {
             ? JSON.parse(localStorage.getItem(memoryname))
             : defaultData;
 
+
         this.highScore = gameMemory.highScore;
         this.score = gameMemory.score;
         this.lives = gameMemory.lives;
         this.pause = gameMemory.pause;
         this.time = gameMemory.time;
         this.memory = memoryname;
+        fetch('/api/scores/user').then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to fetch user scores');
+            }
+        }).then(data => {
+            if (data && data.length > 0) {
+                this.highScore = Math.max(this.highScore, ...data.map(score => score.score));
+                const event = new CustomEvent("highscoreloaded", {
+                    detail: { loaded: true, highscore: this.highScore }
+                });
+                document.dispatchEvent(event);
+            }
+        }).catch(error => {
+            console.error('Error fetching user scores:', error);
+        });
     }
 
     save() {
@@ -81,5 +99,7 @@ class Memory {
     }
 }
 
-const memory = new Memory('gameData', { highScore: 0, score: 0, lives: 1000, pause: false, time: 0 });
+const highScore = localStorage.getItem('highscore') || 0;
+
+const memory = new Memory('gameData', { highScore: Number(highScore), score: 0, lives: 1000, pause: false, time: 0 });
 export default memory;

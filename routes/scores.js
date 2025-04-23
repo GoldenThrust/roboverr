@@ -4,11 +4,24 @@ import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Get top scores
+// Get top scores with pagination
 router.get('/api/scores/top', async (req, res) => {
   try {
-    const topScores = await User.getTopScores(10);
-    res.json(topScores);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    
+    const scores = await User.getTopScores(page, limit);
+    const totalScores = await User.countTotalScores();
+    
+    res.json({
+      scores,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalScores / limit),
+        limit,
+        totalScores
+      }
+    });
   } catch (error) {
     console.error('Error fetching top scores:', error);
     res.status(500).json({ error: 'Failed to fetch top scores' });

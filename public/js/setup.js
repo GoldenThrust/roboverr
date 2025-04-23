@@ -29,8 +29,8 @@ addEventListener("resize", () => {
         //     cs.width = innerHeight;
         //     cs.height = innerWidth;
         // } else {
-            cs.width = innerWidth;
-            cs.height = innerHeight;
+        cs.width = innerWidth;
+        cs.height = innerHeight;
         // }
     })
 })
@@ -83,6 +83,11 @@ export const gameOverHighScore = gameOverMenu.querySelector('#gameOverHighScore'
 
 const restartButton = document.querySelectorAll('.restartButton');
 const menuButton = document.querySelectorAll('.menuButton');
+
+document.addEventListener('highscoreloaded', () => {
+    highScoreElement.innerText = `HighScore ${memory.getHighScore() || 0}`;
+})
+highScoreElement.innerText = `HighScore ${memory.getHighScore() || 0}`;
 
 
 pauseButton.addEventListener('click', () => {

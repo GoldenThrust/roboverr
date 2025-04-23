@@ -1,15 +1,17 @@
 import memory from "./utils/memory.js"
 
-document.querySelector('#guestGame')?.addEventListener('click', () => {
-    memory.reset();
-    location.href = '/game';
-})
+document.querySelectorAll('.playGame')?.forEach(element => {
+    element.addEventListener('click', () => {
+        memory.reset();
+        location.href = '/game';
+    })
+});
 
 document.querySelector('#googleSignIn')?.addEventListener('click', async () => {
     try {
         const response = await fetch('/auth/google/url');
         const data = await response.json();
-        
+
         if (data.url) {
             window.location.href = data.url;
         } else {
@@ -20,7 +22,7 @@ document.querySelector('#googleSignIn')?.addEventListener('click', async () => {
     }
 });
 
-document.getElementById('logoutBtn')?.addEventListener('click', async function(e) {
+document.getElementById('logoutBtn')?.addEventListener('click', async function (e) {
     e.preventDefault();
     try {
         await fetch('/api/auth/logout');
@@ -30,13 +32,13 @@ document.getElementById('logoutBtn')?.addEventListener('click', async function(e
     }
 });
 
-window.addEventListener('click', function(event) {
+window.addEventListener('click', function (event) {
     if (event.target === document.getElementById('scoresModal')) {
         document.getElementById('scoresModal').style.display = 'none';
     }
-}); 
+});
 
-document.querySelector('.close').addEventListener('click', function() {
+document.querySelector('.close').addEventListener('click', function () {
     document.getElementById('scoresModal').style.display = 'none';
 });
 
@@ -44,7 +46,7 @@ async function checkAuthStatus() {
     try {
         const response = await fetch('/api/auth/status');
         const data = await response.json();
-        
+
         if (data.authenticated) {
             console.log('User is already authenticated:', data.user);
         }
@@ -63,3 +65,7 @@ addEventListener("click", () => {
 addEventListener("contextmenu", (e) => {
     e.preventDefault();
 });
+
+function clearMemory() {
+    memory.reset();
+}

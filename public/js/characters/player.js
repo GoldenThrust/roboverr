@@ -180,6 +180,7 @@ class Player {
 
 
     takeDamage(damage) {
+        navigator.vibrate([100, 50, 100]);
         this.health = Math.max(this.health - damage, 0);
         memory.updateLives(this.health);
     }

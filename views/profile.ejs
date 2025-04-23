@@ -5,139 +5,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | RoboVerr</title>
-    <link rel="stylesheet" href="./assets/css/style.css">
-    <style>
-        .profile-container {
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px auto;
-            color: white;
-            max-width: 600px;
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-        .profile-info {
-            margin-bottom: 30px;
-        }
-        .profile-info h3 {
-            margin-bottom: 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 5px;
-        }
-        .profile-stats {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .profile-stat-box {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            padding: 15px;
-            width: 45%;
-            margin-bottom: 15px;
-        }
-        .score-list {
-            margin-top: 20px;
-        }
-        .score-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .score-date {
-            color: #aaa;
-            font-size: 0.9em;
-        }
-        nav {
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        .back-btn {
-            margin-top: 20px;
-            display: inline-block;
-            background-color: #444;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        .back-btn:hover {
-            background-color: #666;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/profile.css">
 </head>
 
-<body id="app">
-    <h1 style="width: 20rem;"><img src="./assets/logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
-
-    <nav>
-        <a href="/">Home</a>
-        <a href="/game">Play Game</a>
-    </nav>
+<body>
+    <div id="app" class="profile-page">
+        <header>
+            <h1 id="logo"><img src="./logo.png" alt="RoboVerr logo"><span
+                    style="display: none;">RoboVerr</span></h1>
     
-    <div class="profile-container">
-        <div class="profile-header">
-            <% if (user.picture) { %>
-                <img src="<%= user.picture %>" alt="Profile" class="profile-avatar">
-            <% } else { %>
-                <div class="profile-avatar" style="background-color: #444; display: flex; align-items: center; justify-content: center;">
-                    <span style="font-size: 36px;"><%= user.name.charAt(0).toUpperCase() %></span>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/game">Play Game</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </nav>
+        </header>
+
+        <div class="profile-container">
+            <div class="profile-header">
+                <% if (user.picture) { %>
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="file" name="avatar" id="avatarInput" accept="image/*" style="display: none;">
+                        <label for="avatarInput" class="profile-avatar"
+                            style="display: block; background-image: url('<%= user.picture %>'); background-size: cover; background-position: center; width: 5rem; height: 5rem;">
+                            <span style="font-size: 36px; display: none;">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </span>
+                        </label>
+                    </form>
+                    <% } else { %>
+                        <div class="profile-avatar"
+                            style="background-color: #444; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 36px;">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </span>
+                        </div>
+                        <% } %>
+                            <div>
+                                <h2 contenteditable="true" id="profileName">
+                                    <%= user.name %>
+                                </h2>
+                                <p>
+                                    <%= user.email %>
+                                </p>
+                            </div>
+            </div>
+
+            <div class="profile-info">
+                <h3>Game Statistics</h3>
+                <div class="profile-stats">
+                    <div class="profile-stat-box">
+                        <h4>Total Games</h4>
+                        <div id="totalGames">Loading...</div>
+                    </div>
+                    <div class="profile-stat-box">
+                        <h4>Highest Score</h4>
+                        <div id="highestScore">Loading...</div>
+                    </div>
+                    <div class="profile-stat-box">
+                        <h4>Average Score</h4>
+                        <div id="averageScore">Loading...</div>
+                    </div>
+                    <div class="profile-stat-box">
+                        <h4>Last Played</h4>
+                        <div id="lastPlayed">Loading...</div>
+                    </div>
                 </div>
-            <% } %>
-            <div>
-                <h2><%= user.name %></h2>
-                <p><%= user.email %></p>
+            </div>
+
+            <div class="profile-info">
+                <h3>Recent Scores</h3>
+                <div id="scores-list" class="score-list">
+                    <p>Loading scores...</p>
+                </div>
             </div>
         </div>
 
-        <div class="profile-info">
-            <h3>Game Statistics</h3>
-            <div class="profile-stats">
-                <div class="profile-stat-box">
-                    <h4>Total Games</h4>
-                    <div id="totalGames">Loading...</div>
-                </div>
-                <div class="profile-stat-box">
-                    <h4>Highest Score</h4>
-                    <div id="highestScore">Loading...</div>
-                </div>
-                <div class="profile-stat-box">
-                    <h4>Average Score</h4>
-                    <div id="averageScore">Loading...</div>
-                </div>
-                <div class="profile-stat-box">
-                    <h4>Last Played</h4>
-                    <div id="lastPlayed">Loading...</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="profile-info">
-            <h3>Recent Scores</h3>
-            <div id="scores-list" class="score-list">
-                <p>Loading scores...</p>
-            </div>
+        <!-- Toast notification for feedback -->
+        <div id="toast" class="toast">
+            <span id="toastMessage"></span>
         </div>
     </div>
-    
+
     <script>
         // Fetch user scores
         async function fetchUserScores() {
@@ -146,37 +96,37 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch scores');
                 }
-                
+
                 const scores = await response.json();
-                
+
                 // Update stats
                 document.getElementById('totalGames').textContent = scores.length;
-                
+
                 if (scores.length > 0) {
                     // Calculate highest score
                     const highestScore = Math.max(...scores.map(s => s.score));
                     document.getElementById('highestScore').textContent = highestScore;
-                    
+
                     // Calculate average score
                     const avgScore = scores.reduce((sum, s) => sum + s.score, 0) / scores.length;
                     document.getElementById('averageScore').textContent = avgScore.toFixed(0);
-                    
+
                     // Get last played date
                     const lastPlayed = new Date(scores[0].date);
                     document.getElementById('lastPlayed').textContent = lastPlayed.toLocaleDateString();
-                    
+
                     // Display recent scores
                     const scoresList = document.getElementById('scores-list');
                     scoresList.innerHTML = '';
-                    
+
                     // Sort by date, most recent first
                     const sortedScores = [...scores].sort((a, b) => new Date(b.date) - new Date(a.date));
                     const recentScores = sortedScores.slice(0, 10); // Get 10 most recent
-                    
+
                     recentScores.forEach(score => {
                         const date = new Date(score.date);
                         const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-                        
+
                         const scoreItem = document.createElement('div');
                         scoreItem.className = 'score-item';
                         scoreItem.innerHTML = `
@@ -185,7 +135,7 @@
                             </div>
                             <div class="score-date">${formattedDate}</div>
                         `;
-                        
+
                         scoresList.appendChild(scoreItem);
                     });
                 } else {
@@ -199,9 +149,117 @@
                 document.getElementById('scores-list').innerHTML = '<p>Failed to load scores. Please try again later.</p>';
             }
         }
-        
-        // Load scores when page loads
-        document.addEventListener('DOMContentLoaded', fetchUserScores);
+
+        // Profile update functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUserScores();
+            setupProfileUpdates();
+        });
+
+        function setupProfileUpdates() {
+            // Handle username update
+            const profileName = document.getElementById('profileName');
+            profileName.addEventListener('blur', async function() {
+                const newName = profileName.textContent.trim();
+                if (newName !== '<%= user.name %>') {
+                    try {
+                        const response = await fetch('/api/user/update-name', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ name: newName })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showToast('Username updated successfully');
+                        } else {
+                            showToast('Failed to update username: ' + result.error);
+                            profileName.textContent = '<%= user.name %>';
+                        }
+                    } catch (error) {
+                        console.error('Error updating username:', error);
+                        showToast('Error updating username');
+                        profileName.textContent = '<%= user.name %>';
+                    }
+                }
+            });
+
+            // Handle profile image upload
+            const avatarInput = document.getElementById('avatarInput');
+            
+            avatarInput.addEventListener('change', async function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    
+                    // Validate file is an image
+                    if (!file.type.match('image.*')) {
+                        showToast('Please select an image file');
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showToast('Image size should be less than 5MB');
+                        return;
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('avatar', file);
+                    
+                    try {
+                        const response = await fetch('/api/user/update-picture', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Update the avatar display with the new image
+                            const avatarLabel = document.querySelector('label.profile-avatar');
+                            if (avatarLabel) {
+                                avatarLabel.style.backgroundImage = `url('${result.picture}')`;
+                                
+                                // Hide the initial if it was showing
+                                const initialSpan = avatarLabel.querySelector('span');
+                                if (initialSpan) {
+                                    initialSpan.style.display = 'none';
+                                }
+                            }
+                            
+                            showToast('Profile picture updated successfully');
+                        } else {
+                            showToast('Failed to update profile picture: ' + result.error);
+                        }
+                    } catch (error) {
+                        console.error('Error updating profile picture:', error);
+                        showToast('Error updating profile picture');
+                    }
+                }
+            });
+        }
+
+        // Toast notification function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('visible');
+            
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        }
+
+        // Add event listener for logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '/logout';
+        });
     </script>
 </body>
 
