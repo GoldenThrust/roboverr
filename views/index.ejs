@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoboVerr</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <script src="./assets/js/index.js" type="module"></script>
+</head>
+
+<body id="app">
+    <h1 style="width: 20rem;"><img src="./assets/logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
+    
+    <% if (isAuthenticated) { %>
+        <div class="user-info">
+            <% if (user.picture) { %>
+                <img src="<%= user.picture %>" alt="Profile" class="avatar">
+            <% } %>
+            <span>Welcome, <%= user.name %></span>
+        </div>
+        <nav>
+            <a href="/game">Play Game</a>
+            <a href="/profile">My Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </nav>
+    <% } else { %>
+        <div class="auth-buttons">
+            <button id="guestGame">Play as Guest</button><br>
+            <button id="googleSignIn"><img src="./assets/img/google.svg" alt="">Google</button><br>
+        </div>
+    <% } %>
+    
+    <div class="highscores">
+        <h2>Highscores</h2>
+        <% if (topScores && topScores.length > 0) { %>
+            <div id="highscore-list">
+                <% topScores.forEach((score, index) => { %>
+                    <div class="highscore-item <%= (isAuthenticated && user && score.name === user.name) ? 'current-user' : '' %>">
+                        <div>
+                            <span><%= index + 1 %>. <%= score.name %></span>
+                        </div>
+                        <div><%= score.score %></div>
+                    </div>
+                <% }); %>
+            </div>
+            <button id="viewAllScores">View All Scores</button>
+        <% } else { %>
+            <p>No scores yet. Be the first to play!</p>
+        <% } %>
+    </div>
+    
+    <!-- Modal for all scores -->
+    <div id="scoresModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>All Highscores</h2>
+            <div id="all-scores-list">
+                <!-- Will be populated with JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('viewAllScores')?.addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/scores/top');
+                const scores = await response.json();
+                
+                const scoresList = document.getElementById('all-scores-list');
+                scoresList.innerHTML = '';
+                
+                scores.forEach((score, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'highscore-item';
+                    
+                    // Check if user is authenticated and this score belongs to current user
+                    <% if (isAuthenticated && user) { %>
+                        if (score.name === "<%= user.name %>") {
+                            item.classList.add('current-user');
+                        }
+                    <% } %>
+                    
+                    item.innerHTML = `
+                        <div>
+                            ${score.picture ? `<img src="${score.picture}" class="avatar" alt="">` : ''}
+                            <span>${index + 1}. ${score.name}</span>
+                        </div>
+                        <div>${score.score}</div>
+                    `;
+                    
+                    scoresList.appendChild(item);
+                });
+                
+                document.getElementById('scoresModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching scores:', error);
+            }
+        });
+        
+        // Close modal
+
+        
+    </script>
+</body>
+
+</html>

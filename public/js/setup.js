@@ -1,13 +1,18 @@
 import Camera from "./camera/camera.js";
 import Platform from "./characters/platform.js";
 import memory from "./utils/memory.js";
-import { displayPauseScreen } from "./utils/utils.js";
+import { displayPauseScreen, isMobileDevice } from "./utils/utils.js";
 
 const whiteBoard = document.querySelectorAll('canvas');
 export const canvas = {}
 export const ctxs = {};
 export const scale = 0.2;
 export const maxDistance = 50000;
+
+addEventListener("click", () => {
+    if (document.fullscreenElement === null)
+        document.documentElement.requestFullscreen()
+});
 
 
 whiteBoard.forEach((cs) => {
@@ -18,16 +23,15 @@ whiteBoard.forEach((cs) => {
 })
 
 addEventListener("resize", () => {
-    console.log('resize');
     whiteBoard.forEach((cs) => {
         canvas[cs.id] = cs;
-        if (window.innerHeight > window.innerWidth) {
-            cs.width = innerHeight;
-            cs.height = innerWidth;
-        } else {
+        // if (window.innerHeight > window.innerWidth) {
+        //     cs.width = innerHeight;
+        //     cs.height = innerWidth;
+        // } else {
             cs.width = innerWidth;
             cs.height = innerHeight;
-        }
+        // }
     })
 })
 
@@ -62,6 +66,7 @@ export const scene = [];
         ctx
     }))
 });
+
 
 export const gameData = document.querySelector('#gameData');
 export const timeElement = document.querySelector('#time');
@@ -115,3 +120,15 @@ window.addEventListener('beforeunload', (event) => {
 window.addEventListener('blur', () => {
     displayPauseScreen();
 });
+
+window.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+});
+
+const gameController = document.querySelector('#gameController');
+
+if (isMobileDevice()) {
+    gameController.classList.remove('hidden');
+} else {
+    gameController.classList.add('hidden');
+}

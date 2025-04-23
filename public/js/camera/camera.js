@@ -49,7 +49,6 @@ export default class Camera {
         ctx.save();
         // ctx.clearRect(0, 0, width, height);
 
-        // Move to center, apply scale and translate according to camera position
         ctx.translate(width / 2, height / 2);
         ctx.scale(scale, scale);
         if (window.innerHeight > window.innerWidth) {
@@ -60,8 +59,8 @@ export default class Camera {
         ctx.translate(-x - width / 2, -y - height / 2);
 
         animateInScene(ctx);
-
         ctx.restore();
+
         animateOutScene(ctx);
     }
 }

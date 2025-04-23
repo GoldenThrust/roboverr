@@ -1,12 +1,34 @@
 export function drawLives(ctx, health, lives) {
-    ctx.font = "20px Arial";
+    ctx.font = "0.8rem Arial";
     ctx.fillStyle = "white";
+  
+    // Determine how many hearts to draw
     const ratio = Math.ceil((health / lives) * 10);
-    ctx.font = "10px Arial";
-    for (let i = 0; i < ratio; i++) {     
-        ctx.fillText("❤️", 5 + i * 20, 15);
+  
+    // Positioning (adjust as needed)
+    const spacing = 30;
+    const startX = 20;
+    const y = 30;
+  
+    ctx.save();
+  
+    // Apply landscape-style rotation if in portrait mode
+    if (window.innerHeight > window.innerWidth) {
+      ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.translate(-ctx.canvas.height / 2, -ctx.canvas.width / 2);
     }
-}
+  
+    // Draw hearts in a row
+    for (let i = 0; i < ratio; i++) {
+      const x = startX + i * spacing;
+      ctx.fillText("❤️", x, y);
+    }
+  
+    ctx.restore();
+  }
+  
+
 export function drawScore(ctx, score) {
     ctx.font = "16px monospace";
     ctx.fillStyle = "white";

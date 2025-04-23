@@ -2,6 +2,7 @@ body, html {
   overflow: hidden;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 body {
@@ -15,6 +16,13 @@ body {
   background-color: transparent;
   border: none;
   cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 canvas {
@@ -24,6 +32,8 @@ canvas {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 
 img {
@@ -82,7 +92,6 @@ img {
   height: 100vh;
 }
 
-
 @media (orientation: landscape) {
   #app {
     width: 100vw;
@@ -92,4 +101,74 @@ img {
     top: 0;
     left: 0;
   }
+}
+
+.highscores {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  color: white;
+  max-width: 400px;
+  width: 100%;
+}
+.highscore-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.highscore-item.current-user {
+  background-color: rgba(255, 215, 0, 0.2);
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.modal-content {
+  background-color: #222;
+  color: white;
+  margin: 10% auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 10px;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover {
+  color: white;
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+nav {
+  margin-bottom: 20px;
+}
+nav a {
+  color: white;
+  margin-right: 15px;
+  text-decoration: none;
+}
+nav a:hover {
+  text-decoration: underline;
 }

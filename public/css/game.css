@@ -1,0 +1,176 @@
+aside {
+  width: 100vh;
+  height: 100vw;
+  transform: rotate(90deg);
+  transform-origin: center center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 10;
+  overflow: hidden;
+}
+
+
+#pauseMenu,
+#gameOverMenu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: springgreen;
+}
+
+
+:is(#pauseMenu, #gameOverMenu) button {
+  background-color: #af574c;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 80px;
+  transition: all 0.3s ease-in-out;
+}
+
+#pauseMenu #resumeButton {
+  width: 35vw;
+}
+
+:is(#pauseMenu, #gameOverMenu) button:hover {
+  background-color: #501414;
+  transform: scale(1.05);
+}
+
+#pauseMenu #resumeButton:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+:is(#pauseMenu, #gameOverMenu) button:active {
+  transform: scale(0.95);
+}
+
+:is(#pauseMenu, #gameOverMenu) button:focus {
+  outline: none;
+  box-shadow: 0 0 5px #4caf50, 0 0 10px #4caf50, 0 0 15px #4caf50;
+}
+
+#gameOverMenu {
+  background-color: rgba(0, 0, 0, 1);
+}
+
+#gameOverMenu div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+#gameOverMenu div:first-of-type {
+  font-size: 1.2rem;
+  font-family: "Courier New", Courier, monospace;
+  font-variant-caps: small-caps;
+
+  color: springgreen;
+}
+
+#gameOverMenu h1 {
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#gameData {
+  position: absolute;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  font-family: "Courier New", Courier, monospace;
+  font-variant-caps: small-caps;
+}
+
+#gameController {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: end;
+  height: 97%;
+  width: 85%;
+  padding: 0 2rem;
+}
+
+#gameController div {
+  width: 3.5rem;
+}
+
+@media (orientation: landscape) {
+  aside {
+    width: 100vw;
+    height: 100vh;
+    transform: rotate(0);
+    translate: initial;
+    top: 0;
+    left: 0;
+  }
+}
+
+.controller {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+
+  display: flex;
+  width: 10rem;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.controller img {
+  width: 50%;
+}
+
+.controller:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#movementcontroller {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+#movementcontroller div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+#movementcontroller div:last-child {
+  width: 8rem;
+}

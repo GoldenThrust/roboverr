@@ -121,7 +121,6 @@ function animate(t) {
       });
 
       lastIncrementTime = t; // 🔄 Reset last time
-      console.log("✅ 10s Passed: Stats incremented");
     }
     scene[0].attachToPlayer(player);
     scene[1].attachToPlayer(player);

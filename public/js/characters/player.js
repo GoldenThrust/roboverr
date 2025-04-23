@@ -1,4 +1,5 @@
 import keyBoard from "../controller/keyBoard.js";
+import touchpad from "../controller/touchpad.js";
 import { enemies } from "../main.js";
 import collider from "../physics/collider.js";
 import { ctxs, maxDistance } from "../setup.js";
@@ -98,11 +99,11 @@ class Player {
     movement(t) {
         const keys = this.controller;
 
-        if (keys['Enter']) {
+        if (keys['Enter'] || touchpad.isShooting) {
             this.shootGun(t);
         }
 
-        if (keys['ArrowUp'] && this.isOnGround) {
+        if ((keys['ArrowUp'] || touchpad.isJumping) && this.isOnGround) {
             this.dy = -this.jumpStrength;
             this.isOnGround = false;
             this.jumpAnim.restart();
@@ -110,12 +111,12 @@ class Player {
 
         this.moving = false;
 
-        if (keys['ArrowLeft']) {
+        if (keys['ArrowLeft'] || touchpad.isGoingLeft) {
             this.dx = -10;
             this.x += this.dx;
             this.flip = -1;
             this.moving = true;
-        } else if (keys['ArrowRight']) {
+        } else if (keys['ArrowRight'] || touchpad.isGoingRight) {
             this.dx = 10;
             this.x += this.dx;
             this.flip = 1;

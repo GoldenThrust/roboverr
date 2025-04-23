@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | RoboVerr</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <style>
+        .profile-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            color: white;
+            max-width: 600px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .profile-info {
+            margin-bottom: 30px;
+        }
+        .profile-info h3 {
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 5px;
+        }
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .profile-stat-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 15px;
+            width: 45%;
+            margin-bottom: 15px;
+        }
+        .score-list {
+            margin-top: 20px;
+        }
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .score-date {
+            color: #aaa;
+            font-size: 0.9em;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #444;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+
+<body id="app">
+    <h1 style="width: 20rem;"><img src="./assets/logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/game">Play Game</a>
+    </nav>
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <% if (user.picture) { %>
+                <img src="<%= user.picture %>" alt="Profile" class="profile-avatar">
+            <% } else { %>
+                <div class="profile-avatar" style="background-color: #444; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 36px;"><%= user.name.charAt(0).toUpperCase() %></span>
+                </div>
+            <% } %>
+            <div>
+                <h2><%= user.name %></h2>
+                <p><%= user.email %></p>
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <h3>Game Statistics</h3>
+            <div class="profile-stats">
+                <div class="profile-stat-box">
+                    <h4>Total Games</h4>
+                    <div id="totalGames">Loading...</div>
+                </div>
+                <div class="profile-stat-box">
+                    <h4>Highest Score</h4>
+                    <div id="highestScore">Loading...</div>
+                </div>
+                <div class="profile-stat-box">
+                    <h4>Average Score</h4>
+                    <div id="averageScore">Loading...</div>
+                </div>
+                <div class="profile-stat-box">
+                    <h4>Last Played</h4>
+                    <div id="lastPlayed">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-info">
+            <h3>Recent Scores</h3>
+            <div id="scores-list" class="score-list">
+                <p>Loading scores...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Fetch user scores
+        async function fetchUserScores() {
+            try {
+                const response = await fetch('/api/scores/user');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch scores');
+                }
+                
+                const scores = await response.json();
+                
+                // Update stats
+                document.getElementById('totalGames').textContent = scores.length;
+                
+                if (scores.length > 0) {
+                    // Calculate highest score
+                    const highestScore = Math.max(...scores.map(s => s.score));
+                    document.getElementById('highestScore').textContent = highestScore;
+                    
+                    // Calculate average score
+                    const avgScore = scores.reduce((sum, s) => sum + s.score, 0) / scores.length;
+                    document.getElementById('averageScore').textContent = avgScore.toFixed(0);
+                    
+                    // Get last played date
+                    const lastPlayed = new Date(scores[0].date);
+                    document.getElementById('lastPlayed').textContent = lastPlayed.toLocaleDateString();
+                    
+                    // Display recent scores
+                    const scoresList = document.getElementById('scores-list');
+                    scoresList.innerHTML = '';
+                    
+                    // Sort by date, most recent first
+                    const sortedScores = [...scores].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    const recentScores = sortedScores.slice(0, 10); // Get 10 most recent
+                    
+                    recentScores.forEach(score => {
+                        const date = new Date(score.date);
+                        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                        
+                        const scoreItem = document.createElement('div');
+                        scoreItem.className = 'score-item';
+                        scoreItem.innerHTML = `
+                            <div>
+                                <strong>${score.score}</strong>
+                            </div>
+                            <div class="score-date">${formattedDate}</div>
+                        `;
+                        
+                        scoresList.appendChild(scoreItem);
+                    });
+                } else {
+                    document.getElementById('highestScore').textContent = 'N/A';
+                    document.getElementById('averageScore').textContent = 'N/A';
+                    document.getElementById('lastPlayed').textContent = 'N/A';
+                    document.getElementById('scores-list').innerHTML = '<p>No scores yet. Play a game to see your stats!</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching user scores:', error);
+                document.getElementById('scores-list').innerHTML = '<p>Failed to load scores. Please try again later.</p>';
+            }
+        }
+        
+        // Load scores when page loads
+        document.addEventListener('DOMContentLoaded', fetchUserScores);
+    </script>
+</body>
+
+</html>

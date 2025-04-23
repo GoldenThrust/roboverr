@@ -1,5 +1,4 @@
 import { ctxs } from "../setup.js";
-import { drawSpriteFrame } from "../utils/utils.js";
 
 class Platform {
     constructor({ x, y, width, height, cutWidth, cutHeight, img = null, id = "Platform", column = 0, row = 0 }) {
