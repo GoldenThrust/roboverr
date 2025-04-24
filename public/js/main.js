@@ -185,8 +185,18 @@ function animate(t) {
       "enemy": "img/enemy.png",
       "bg": "img/bg.png",
     });
+
+    await ast.loadAudio({
+      "walk": "audio/walk.m4a",
+      "shoot": "audio/shoot.mp3",
+    });
   });
   requestAnimationFrame(animate);
 })();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/assets/js/service-worker.js')
+    .then(() => console.log("Service Worker registered"));
+}
 
 initiateEnemies(20)

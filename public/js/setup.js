@@ -46,6 +46,17 @@ export const land = new Platform({
     img: 'terrain'
 });
 
+// export const platform = new Platform({
+//     x: -maxDistance / 2,
+//     y: ctxs['bgcs'].canvas.height,
+//     width: maxDistance,
+//     height: (ctxs['bgcs'].canvas.height * scale) * 100,
+//     cutWidth: 50,
+//     cutHeight: 50,
+//     id: 'land',
+//     img: 'terrain'
+// });
+
 export const background = new Platform({
     x: -maxDistance / 2,
     y: -10000,

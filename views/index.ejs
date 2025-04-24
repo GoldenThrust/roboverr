@@ -5,147 +5,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoboVerr</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/android-chrome-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/android-chrome-192x192.png">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta name="theme-color" content="#000000">
     <link rel="stylesheet" href="./assets/css/style.css">
     <script src="./assets/js/index.js" type="module"></script>
 </head>
 
 <body id="app">
     <h1 id="logo"><img src="./assets/logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
-    
+
     <% if (isAuthenticated) { %>
         <div class="user-info">
             <% if (user.picture) { %>
                 <img src="<%= user.picture %>" alt="Profile" class="avatar">
-            <% } %>
-            <span class="userWelcome">Welcome, <%= user.name %></span>
+                <% } %>
+                    <span class="userWelcome">Welcome, <%= user.name %></span>
         </div>
         <nav>
-            <button id="playGame" class="playGame" >Play Game</button>
+            <button id="playGame" class="playGame">Play Game</button>
             <a href="/profile">My Profile</a>
         </nav>
-    <% } else { %>
-        <div class="auth-buttons">
-            <button id="guestGame" class="playGame" >Play as Guest</button><br>
-            <button id="googleSignIn"><img src="./assets/img/google.svg" alt="">Google</button><br>
-        </div>
-    <% } %>
-    
-    <div class="highscores">
-        <h2>Highscores</h2>
-        <% if (topScores && topScores.length > 0) { %>
-            <div id="highscore-list">
-                <% topScores.forEach((score, index) => { %>
-                    <div class="highscore-item <%= (isAuthenticated && user && score.name === user.name) ? 'current-user' : '' %>">
-                        <div>
-                            <span><%= index + 1 %>. <%= score.name %></span>
-                        </div>
-                        <div><%= score.score %></div>
-                    </div>
-                <% }); %>
-            </div>
-            <button id="viewAllScores">View All Scores</button>
         <% } else { %>
-            <p>No scores yet. Be the first to play!</p>
-        <% } %>
-    </div>
-    
-    <!-- Modal for all scores -->
-    <div id="scoresModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>All Highscores</h2>
-            <div id="all-scores-list">
+            <div class="auth-buttons">
+                <button id="guestGame" class="playGame">Play as Guest</button><br>
+                <button id="googleSignIn"><img src="./assets/img/google.svg" alt="">Google</button><br>
             </div>
-            <div class="pagination-controls">
-                <button id="prevPage" disabled>&laquo; Previous</button>
-                <span id="pageInfo">Page 1 of 1</span>
-                <button id="nextPage">Next &raquo;</button>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Pagination variables
-        let currentPage = 1;
-        let totalPages = 1;
-        const scoresPerPage = 5;
-        
-        async function fetchScores(page = 1) {
-            try {
-                const response = await fetch(`/api/scores/top?page=${page}&limit=${scoresPerPage}`);
-                const data = await response.json();
-                
-                const scoresList = document.getElementById('all-scores-list');
-                scoresList.innerHTML = '';
-                
-                // Update pagination info
-                currentPage = data.pagination.currentPage;
-                totalPages = data.pagination.totalPages;
-                
-                document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
-                document.getElementById('prevPage').disabled = currentPage <= 1;
-                document.getElementById('nextPage').disabled = currentPage >= totalPages;
-                
-                // Display scores
-                data.scores.forEach((score, index) => {
-                    const actualIndex = (currentPage - 1) * scoresPerPage + index + 1;
-                    const item = document.createElement('div');
-                    item.className = 'highscore-item';
-                    
+            <% } %>
+
+                <div class="highscores">
+                    <h2>Highscores</h2>
+                    <% if (topScores && topScores.length> 0) { %>
+                        <div id="highscore-list">
+                            <% topScores.forEach((score, index)=> { %>
+                                <div
+                                    class="highscore-item <%= (isAuthenticated && user && score.name === user.name) ? 'current-user' : '' %>">
+                                    <div>
+                                        <span>
+                                            <%= index + 1 %>. <%= score.name %>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <%= score.score %>
+                                    </div>
+                                </div>
+                                <% }); %>
+                        </div>
+                        <button id="viewAllScores">View All Scores</button>
+                        <% } else { %>
+                            <p>No scores yet. Be the first to play!</p>
+                            <% } %>
+                </div>
+
+                <!-- Modal for all scores -->
+                <div id="scoresModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h2>All Highscores</h2>
+                        <div id="all-scores-list">
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="prevPage" disabled>&laquo; Previous</button>
+                            <span id="pageInfo">Page 1 of 1</span>
+                            <button id="nextPage">Next &raquo;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // Pagination variables
+                    let currentPage = 1;
+                    let totalPages = 1;
+                    const scoresPerPage = 5;
+
+                    async function fetchScores(page = 1) {
+                        try {
+                            const response = await fetch(`/api/scores/top?page=${page}&limit=${scoresPerPage}`);
+                            const data = await response.json();
+
+                            const scoresList = document.getElementById('all-scores-list');
+                            scoresList.innerHTML = '';
+
+                            // Update pagination info
+                            currentPage = data.pagination.currentPage;
+                            totalPages = data.pagination.totalPages;
+
+                            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+                            document.getElementById('prevPage').disabled = currentPage <= 1;
+                            document.getElementById('nextPage').disabled = currentPage >= totalPages;
+
+                            // Display scores
+                            data.scores.forEach((score, index) => {
+                                const actualIndex = (currentPage - 1) * scoresPerPage + index + 1;
+                                const item = document.createElement('div');
+                                item.className = 'highscore-item';
+
                     // Check if user is authenticated and this score belongs to current user
                     <% if (isAuthenticated && user) { %>
                         if (score.name === "<%= user.name %>") {
-                            item.classList.add('current-user');
-                        }
+                                        item.classList.add('current-user');
+                                    }
                     <% } %>
-                    
-                    item.innerHTML = `
+
+                                    item.innerHTML = `
                         <div>
                             ${score.picture ? `<img src="${score.picture}" class="avatar" alt="">` : ''}
                             <span>${actualIndex}. ${score.name}</span>
                         </div>
                         <div>${score.score}</div>
                     `;
-                    
-                    scoresList.appendChild(item);
-                });
-            } catch (error) {
-                console.error('Error fetching scores:', error);
-            }
-        }
-        
-        document.getElementById('viewAllScores')?.addEventListener('click', function() {
-            currentPage = 1;
-            fetchScores(currentPage);
-            document.getElementById('scoresModal').style.display = 'block';
-        });
-        
-        // Add pagination event listeners
-        document.getElementById('prevPage')?.addEventListener('click', function() {
-            if (currentPage > 1) {
-                fetchScores(currentPage - 1);
-            }
-        });
-        
-        document.getElementById('nextPage')?.addEventListener('click', function() {
-            if (currentPage < totalPages) {
-                fetchScores(currentPage + 1);
-            }
-        });
-        
-        // Close modal
-        document.querySelector('.close')?.addEventListener('click', function() {
-            document.getElementById('scoresModal').style.display = 'none';
-        });
-        
-        // Close modal when clicking outside
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('scoresModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    </script>
+
+                                scoresList.appendChild(item);
+                            });
+                        } catch (error) {
+                            console.error('Error fetching scores:', error);
+                        }
+                    }
+
+                    document.getElementById('viewAllScores')?.addEventListener('click', function () {
+                        currentPage = 1;
+                        fetchScores(currentPage);
+                        document.getElementById('scoresModal').style.display = 'block';
+                    });
+
+                    // Add pagination event listeners
+                    document.getElementById('prevPage')?.addEventListener('click', function () {
+                        if (currentPage > 1) {
+                            fetchScores(currentPage - 1);
+                        }
+                    });
+
+                    document.getElementById('nextPage')?.addEventListener('click', function () {
+                        if (currentPage < totalPages) {
+                            fetchScores(currentPage + 1);
+                        }
+                    });
+
+                    // Close modal
+                    document.querySelector('.close')?.addEventListener('click', function () {
+                        document.getElementById('scoresModal').style.display = 'none';
+                    });
+
+                    // Close modal when clicking outside
+                    window.addEventListener('click', function (event) {
+                        const modal = document.getElementById('scoresModal');
+                        if (event.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+                </script>
 </body>
 
 </html>

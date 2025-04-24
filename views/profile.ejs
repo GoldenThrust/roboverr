@@ -5,16 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | RoboVerr</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/android-chrome-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/android-chrome-192x192.png">
+    <link rel="manifest" href="/assets/manifest.json">
+    <meta name="theme-color" content="##000000">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/profile.css">
+    <script src="./assets/js/index.js" type="module"></script>
 </head>
 
 <body>
     <div id="app" class="profile-page">
         <header>
-            <h1 id="logo"><img src="./logo.png" alt="RoboVerr logo"><span
-                    style="display: none;">RoboVerr</span></h1>
-    
+            <h1 id="logo"><img src="./logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
+
             <nav>
                 <a href="/">Home</a>
                 <a href="/game">Play Game</a>
@@ -151,7 +156,7 @@
         }
 
         // Profile update functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             fetchUserScores();
             setupProfileUpdates();
         });
@@ -159,7 +164,7 @@
         function setupProfileUpdates() {
             // Handle username update
             const profileName = document.getElementById('profileName');
-            profileName.addEventListener('blur', async function() {
+            profileName.addEventListener('blur', async function () {
                 const newName = profileName.textContent.trim();
                 if (newName !== '<%= user.name %>') {
                     try {
@@ -170,9 +175,9 @@
                             },
                             body: JSON.stringify({ name: newName })
                         });
-                        
+
                         const result = await response.json();
-                        
+
                         if (result.success) {
                             showToast('Username updated successfully');
                         } else {
@@ -189,47 +194,47 @@
 
             // Handle profile image upload
             const avatarInput = document.getElementById('avatarInput');
-            
-            avatarInput.addEventListener('change', async function(e) {
+
+            avatarInput.addEventListener('change', async function (e) {
                 if (e.target.files.length > 0) {
                     const file = e.target.files[0];
-                    
+
                     // Validate file is an image
                     if (!file.type.match('image.*')) {
                         showToast('Please select an image file');
                         return;
                     }
-                    
+
                     // Validate file size (max 5MB)
                     if (file.size > 5 * 1024 * 1024) {
                         showToast('Image size should be less than 5MB');
                         return;
                     }
-                    
+
                     const formData = new FormData();
                     formData.append('avatar', file);
-                    
+
                     try {
                         const response = await fetch('/api/user/update-picture', {
                             method: 'POST',
                             body: formData
                         });
-                        
+
                         const result = await response.json();
-                        
+
                         if (result.success) {
                             // Update the avatar display with the new image
                             const avatarLabel = document.querySelector('label.profile-avatar');
                             if (avatarLabel) {
                                 avatarLabel.style.backgroundImage = `url('${result.picture}')`;
-                                
+
                                 // Hide the initial if it was showing
                                 const initialSpan = avatarLabel.querySelector('span');
                                 if (initialSpan) {
                                     initialSpan.style.display = 'none';
                                 }
                             }
-                            
+
                             showToast('Profile picture updated successfully');
                         } else {
                             showToast('Failed to update profile picture: ' + result.error);
@@ -246,17 +251,17 @@
         function showToast(message) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
-            
+
             toastMessage.textContent = message;
             toast.classList.add('visible');
-            
+
             setTimeout(() => {
                 toast.classList.remove('visible');
             }, 3000);
         }
 
         // Add event listener for logout
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        document.getElementById('logoutBtn').addEventListener('click', function (e) {
             e.preventDefault();
             window.location.href = '/logout';
         });

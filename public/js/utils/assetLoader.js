@@ -1,21 +1,31 @@
+import { createAudioBuffer, initaudioCtx } from "./audio.js";
 import { loadImage } from "./utils.js";
 
 class Assets {
     constructor() {
         this.assetsLoaded = false;
+        initaudioCtx();
     }
 
-    async loadImages(images) {
+    async prefetch(assets, callBack) {
         const entries = await Promise.all(
-            Object.entries(images).map(async ([name, url]) => {
-                const image = await loadImage(`./assets/${url}`);
-                return [name, image];
+            Object.entries(assets).map(async ([name, url]) => {
+                const asset = await callBack(`./assets/${url}`);
+                return [name, asset];
             })
         );
 
-        for (const [name, image] of entries) {
-            this[name] = image;
+        for (const [name, asset] of entries) {
+            this[name] = asset;
         }
+    }
+
+    async loadImages(images) {
+        await this.prefetch(images, loadImage);
+    }
+
+    async loadAudio(audio) {
+        await this.prefetch(audio, createAudioBuffer);
     }
 
     async preload(callBack) {
@@ -25,6 +35,7 @@ class Assets {
         const event = new CustomEvent("assetsloaded", {
             detail: { loaded: true, assets: this }
         });
+
         document.dispatchEvent(event);
     }
 }
