@@ -3,6 +3,7 @@ import touchpad from "../controller/touchpad.js";
 import { enemies } from "../main.js";
 import collider from "../physics/collider.js";
 import { ctxs, maxDistance } from "../setup.js";
+import { playGunshot, playWalk } from "../utils/audio.js";
 import memory from "../utils/memory.js";
 import SpriteAnimation from "../utils/spriteAnimation.js";
 import { generateUniqueId } from "../utils/utils.js";
@@ -151,6 +152,7 @@ class Player {
         this.fireWeapon(
             new Gun({ damage: 10, range: 8000, x: this.x + this.width / 2, y: this.y + this.height / 2.5, speed: this.flip * (20 + Math.abs(this.dx)), color: "black" })
         );
+        playGunshot();
     }
 
     fireWeapon(weapon) {

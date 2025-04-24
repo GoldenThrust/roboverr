@@ -1,10 +1,9 @@
-import { createAudioBuffer, initaudioCtx } from "./audio.js";
+import { createAudioBuffer } from "./audio.js";
 import { loadImage } from "./utils.js";
 
 class Assets {
     constructor() {
         this.assetsLoaded = false;
-        initaudioCtx();
     }
 
     async prefetch(assets, callBack) {

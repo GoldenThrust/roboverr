@@ -191,6 +191,7 @@ function animate(t) {
       "shoot": "audio/shoot.mp3",
     });
   });
+
   requestAnimationFrame(animate);
 })();
 
