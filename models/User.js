@@ -1,69 +1,97 @@
-import mongoose from 'mongoose';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
-const userSchema = new mongoose.Schema({
+// Define the User model with Sequelize
+class User extends Model {
+  // Method to add a new high score for a user
+  async addScore(score) {
+    const newScore = await UserScore.create({
+      userId: this.id,
+      score: score,
+    });
+    return newScore;
+  }
+  
+  // Static method to get top scores across all users with pagination
+  static async getTopScores(page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    
+    const scores = await UserScore.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'picture'],
+          required: true,
+        }
+      ],
+      order: [['score', 'DESC']],
+      offset,
+      limit,
+      raw: true,
+      nest: true
+    });
+    
+    return scores.map(score => ({
+      name: score.User.name,
+      picture: score.User.picture,
+      score: score.score,
+      date: score.createdAt
+    }));
+  }
+  
+  // Static method to count total number of scores
+  static async countTotalScores() {
+    return await UserScore.count();
+  }
+}
+
+// Initialize the User model
+User.init({
   googleId: {
-    type: String,
-    unique: true
+    type: DataTypes.STRING,
+    unique: true,
   },
   name: {
-    type: String,
-    required: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   email: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true
   },
   picture: {
-    type: String
+    type: DataTypes.STRING
+  }
+}, {
+  sequelize,
+  modelName: 'User',
+  timestamps: true
+});
+
+// Define a separate model for scores
+class UserScore extends Model {}
+
+UserScore.init({
+  score: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
   },
-  highScores: [{
-    score: {
-      type: Number,
-      default: 0
-    },
-    date: {
-      type: Date,
-      default: Date.now
+  userId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'id'
     }
-  }]
-}, { timestamps: true });
+  }
+}, {
+  sequelize,
+  modelName: 'UserScore',
+  timestamps: true
+});
 
-// Static method to get top scores across all users with pagination
-userSchema.statics.getTopScores = async function(page = 1, limit = 10) {
-  const skip = (page - 1) * limit;
-  
-  return this.aggregate([
-    { $unwind: "$highScores" },
-    { $sort: { "highScores.score": -1 } },
-    { $skip: skip },
-    { $limit: limit },
-    { $project: {
-        name: 1,
-        score: "$highScores.score",
-        date: "$highScores.date",
-        picture: 1
-      }
-    }
-  ]);
-};
-
-// Static method to count total number of scores
-userSchema.statics.countTotalScores = async function() {
-  const result = await this.aggregate([
-    { $unwind: "$highScores" },
-    { $count: "totalScores" }
-  ]);
-  
-  return result.length > 0 ? result[0].totalScores : 0;
-};
-
-// Method to add a new high score for a user
-userSchema.methods.addScore = async function(score) {
-  this.highScores.push({ score });
-  return this.save();
-};
-
-const User = mongoose.model('User', userSchema);
+// Define associations
+User.hasMany(UserScore, { foreignKey: 'userId' });
+UserScore.belongsTo(User, { foreignKey: 'userId' });
 
 export default User;

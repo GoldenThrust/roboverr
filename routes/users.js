@@ -48,7 +48,7 @@ const router = express.Router();
 // Get user profile
 router.get('/api/user/profile', requireAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -78,13 +78,12 @@ router.post('/api/user/update-name', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Name is required' });
     }
     
-    const user = await User.findById(req.user.id);
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    user.name = name.trim();
-    await user.save();
+    await user.update({ name: name.trim() });
     
     // Update the session user info
     req.user.name = user.name;
@@ -111,7 +110,7 @@ router.post('/api/user/update-picture', requireAuth, upload.single('avatar'), as
       return res.status(400).json({ error: 'No image file uploaded' });
     }
     
-    const user = await User.findById(req.user.id);
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -131,8 +130,7 @@ router.post('/api/user/update-picture', requireAuth, upload.single('avatar'), as
       }
     }
     
-    user.picture = relativePath;
-    await user.save();
+    await user.update({ picture: relativePath });
     
     // Update the session user info
     req.user.picture = user.picture;

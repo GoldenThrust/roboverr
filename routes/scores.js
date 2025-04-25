@@ -1,10 +1,11 @@
 import express from 'express';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
+// import { Op } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const router = express.Router();
 
-// Get top scores with pagination
 router.get('/api/scores/top', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -31,13 +32,29 @@ router.get('/api/scores/top', async (req, res) => {
 // Get user's scores
 router.get('/api/scores/user', requireAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const { UserScore } = sequelize.models;
+    if (!UserScore) {
+      return res.status(500).json({ error: 'UserScore model not found' });
+    }
+
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    const scores = user.highScores.sort((a, b) => b.score - a.score);
-    res.json(scores);
+    const scores = await UserScore.findAll({
+      where: { userId: user.id },
+      order: [['score', 'DESC']],
+      raw: true
+    });
+
+    // Format the response to match the expected structure
+    const formattedScores = scores.map(score => ({
+      score: score.score,
+      date: score.createdAt
+    }));
+    
+    res.json(formattedScores);
   } catch (error) {
     console.error('Error fetching user scores:', error);
     res.status(500).json({ error: 'Failed to fetch user scores' });
@@ -53,13 +70,13 @@ router.post('/api/scores', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Valid score is required' });
     }
     
-    const user = await User.findById(req.user.id);
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
     await user.addScore(Number(score));
     res.json({ success: true, message: 'Score saved successfully' });
+    
   } catch (error) {
     console.error('Error saving score:', error);
     res.status(500).json({ error: 'Failed to save score' });

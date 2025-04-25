@@ -9,7 +9,8 @@ import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config.js';
 import crypto from 'crypto';
-import mongoose from 'mongoose';
+// Import sequelize instance and models
+import sequelize from './config/database.js';
 // Import routes and middleware
 import scoresRoutes from './routes/scores.js';
 import userRoutes from './routes/users.js';
@@ -29,10 +30,19 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/roboverr')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Initialize database
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Connected to PostgreSQL database');
+    
+    // Sync models with database (create tables if they don't exist)
+    await sequelize.sync();
+    console.log('Database synchronized');
+  } catch (err) {
+    console.error('Failed to connect to the database:', err);
+  }
+})();
 
 // Set up OAuth2 client
 const oauth2Client = new google.auth.OAuth2(
@@ -135,13 +145,21 @@ app.get('/auth/google/callback', async (req, res) => {
     }
 
     // Find or create user in database
-    let user = await User.findOne({ email: data.email });
-    
-    if (!user) {
-      user = await User.create({
+    let [user, created] = await User.findOrCreate({
+      where: { email: data.email },
+      defaults: {
         googleId: data.id,
         name: data.name,
         email: data.email,
+        picture: data.picture
+      }
+    });
+    
+    // Update user data if it exists but some fields changed
+    if (!created) {
+      await user.update({
+        googleId: data.id,
+        name: data.name,
         picture: data.picture
       });
     }
@@ -177,6 +195,11 @@ app.get('/api/auth/status', (req, res) => {
 });
 
 // Logout
+app.get('/logout', (req, res) => {
+  res.clearCookie('auth_token');
+  res.redirect('/');
+});
+
 app.get('/api/auth/logout', (req, res) => {
   res.clearCookie('auth_token');
   res.json({ success: true });

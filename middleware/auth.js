@@ -14,9 +14,10 @@ export const isAuthenticated = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    let user = await User.findOne({ email: decoded.email });
+    let user = await User.findOne({ where: { email: decoded.email } });
     
     if (!user) {
+      // Create user if not found (shouldn't happen normally)
       user = await User.create({
         googleId: decoded.id,
         name: decoded.name,
@@ -27,7 +28,7 @@ export const isAuthenticated = async (req, res, next) => {
     
     req.isAuthenticated = true;
     req.user = {
-      id: user._id,
+      id: user.id,
       name: user.name,
       email: user.email,
       picture: user.picture
