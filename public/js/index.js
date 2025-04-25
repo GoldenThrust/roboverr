@@ -44,7 +44,7 @@ window.addEventListener('click', function (event) {
     }
 });
 
-document.querySelector('.close').addEventListener('click', function () {
+document.querySelector('.close')?.addEventListener('click', function () {
     document.getElementById('scoresModal').style.display = 'none';
 });
 
