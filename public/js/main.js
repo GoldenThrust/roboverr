@@ -7,6 +7,12 @@ import { enemySpriteRows } from "./utils/constants.js";
 import Enemy from "./characters/enemy.js";
 import { drawLives } from "./utils/game.js";
 import memory from "./utils/memory.js";
+import config from "./utils/config.js";
+
+// Initialize config with asset URL from window.APP_CONFIG
+if (window.APP_CONFIG && window.APP_CONFIG.assetUrl) {
+  config.init(window.APP_CONFIG);
+}
 
 const ctx = ctxs["mgcs"];
 // 🎮 Create player
@@ -24,11 +30,8 @@ export const player = new Player(
   "Player"
 );
 
-
-
 player.health = memory.getLives();
 player.score = memory.getScore();
-
 
 let spawnNumber = 20;
 let dxFactor = 1;
@@ -38,11 +41,9 @@ let lastTime = 0;
 
 export let enemies = [];
 
-
 // 🧟‍♂️ Initiate enemies with shuffled names
 function initiateEnemies(count = 1) {
   const enemyNames = Object.keys(enemySpriteRows);
-  
 
   for (let i = 0; i < count; i++) {
     const name = enemyNames[Math.floor(Math.random() * enemyNames.length)];
@@ -86,7 +87,6 @@ setInterval(() => {
   initiateEnemies(spawnNumber - enemies.length);
 }, 1000);
 
-
 // 💥 Add collision logic
 collider.addCollider({
   obj1: player,
@@ -101,12 +101,12 @@ collider.addCollider({
 // 🔁 Game loop
 function animate(t) {
   if (!memory.getPause()) {
-    memory.updateTime(t - lastTime)
+    memory.updateTime(t - lastTime);
 
     const seconds = Math.floor(memory.getTime() / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
-    timeElement.innerText = `${hours % 24}hrs ${minutes%60}mins ${seconds % 60}secs`;
+    timeElement.innerText = `${hours % 24}hrs ${minutes % 60}mins ${seconds % 60}secs`;
 
     if (t - lastIncrementTime >= 10000) {
       spawnNumber++;
@@ -130,8 +130,8 @@ function animate(t) {
       animateInScene: () => {
         background.draw();
         land.draw();
-      }
-    })
+      },
+    });
     scene[1]?.animate({
       animateInScene: () => {
         enemies.forEach((e) => {
@@ -140,23 +140,22 @@ function animate(t) {
         });
         player.draw(t);
         player.update(t);
-      }
-    })
+      },
+    });
 
     scene[2]?.animate({
-      animateOutScene:
-        (ctx) => {
-          drawLives(ctx, player.health, player.lives)
-        }
-    })
+      animateOutScene: (ctx) => {
+        drawLives(ctx, player.health, player.lives);
+      },
+    });
 
     enemies = enemies.filter((e) => {
       if (!e.isAlive()) {
         player.score += 1;
         memory.updateScore(player.score);
         scoreElement.innerText = `Score: ${player.score}`;
-      };
-      return e.isAlive()
+      }
+      return e.isAlive();
     });
 
     collider.checkCollisons();
@@ -178,26 +177,27 @@ function animate(t) {
 (async () => {
   await asset.preload(async (ast) => {
     await ast.loadImages({
-      "robot-run": "img/robot-run.png",
-      "robot-jump": "img/robot-jump.png",
-      "robot-stand": "img/robot-stand.png",
-      "terrain": "img/terrain.png",
-      "enemy": "img/enemy.png",
-      "bg": "img/bg.png",
+      "robot-run": config.getAssetUrl("img/robot-run.png"),
+      "robot-jump": config.getAssetUrl("img/robot-jump.png"),
+      "robot-stand": config.getAssetUrl("img/robot-stand.png"),
+      "terrain": config.getAssetUrl("img/terrain.png"),
+      "enemy": config.getAssetUrl("img/enemy.png"),
+      "bg": config.getAssetUrl("img/bg.png"),
     });
 
     await ast.loadAudio({
-      "walk": "audio/walk.m4a",
-      "shoot": "audio/shoot.mp3",
+      "walk": config.getAssetUrl("audio/walk.m4a"),
+      "shoot": config.getAssetUrl("audio/shoot.mp3"),
     });
   });
 
   requestAnimationFrame(animate);
 })();
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/assets/js/service-worker.js')
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register(config.getAssetUrl("js/service-worker.js"))
     .then(() => console.log("Service Worker registered"));
 }
 
-initiateEnemies(20)
+initiateEnemies(20);

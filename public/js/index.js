@@ -1,4 +1,10 @@
 import memory from "./utils/memory.js"
+import config from "./utils/config.js";
+
+// Initialize config with asset URL from window.APP_CONFIG
+if (window.APP_CONFIG && window.APP_CONFIG.assetUrl) {
+    config.init(window.APP_CONFIG);
+}
 
 document.querySelectorAll('.playGame')?.forEach(element => {
     element.addEventListener('click', () => {
@@ -71,7 +77,6 @@ function clearMemory() {
 }
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/assets/js/service-worker.js')
+    navigator.serviceWorker.register(config.getAssetUrl('js/service-worker.js'))
       .then(() => console.log("Service Worker registered"));
-  }
-  
+}

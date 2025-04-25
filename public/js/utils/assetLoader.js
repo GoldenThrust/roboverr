@@ -1,5 +1,6 @@
 import { createAudioBuffer } from "./audio.js";
 import { loadImage } from "./utils.js";
+import config from "./config.js";
 
 class Assets {
     constructor() {
@@ -9,7 +10,8 @@ class Assets {
     async prefetch(assets, callBack) {
         const entries = await Promise.all(
             Object.entries(assets).map(async ([name, url]) => {
-                const asset = await callBack(`./assets/${url}`);
+                // Use the URL directly as it should now contain the full path from the config
+                const asset = await callBack(url);
                 return [name, asset];
             })
         );

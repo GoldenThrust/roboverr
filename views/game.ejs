@@ -5,23 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoboVerr</title>
-    <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="stylesheet" href="./assets/css/game.css">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/assets/android-chrome-512x512.png">
-    <link rel="apple-touch-icon" href="/assets/android-chrome-192x192.png">
-    <link rel="manifest" href="/assets/manifest.json">
+    <link rel="stylesheet" href="<%= assetUrl %>/css/style.css">
+    <link rel="stylesheet" href="<%= assetUrl %>/css/game.css">
+    <link rel="icon" type="image/png" sizes="192x192" href="<%= assetUrl %>/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="<%= assetUrl %>/android-chrome-512x512.png">
+    <link rel="apple-touch-icon" href="<%= assetUrl %>/android-chrome-192x192.png">
+    <link rel="manifest" href="<%= assetUrl %>/manifest.json">
     <meta name="theme-color" content="#000000">
-    <script src="./assets/js/main.js" type="module"></script>
+    <script>
+        // Pass asset URL to JavaScript
+        window.APP_CONFIG = {
+            assetUrl: "<%= assetUrl %>"
+        };
+    </script>
+    <script src="<%= assetUrl %>/js/main.js" type="module"></script>
 </head>
 
 <body>
     <aside>
         <div id="pauseMenu" class="hidden">
-            <button id="resumeButton"><img src="./assets/img/play.svg" alt="Resume Button"></button>
+            <button id="resumeButton"><img src="<%= assetUrl %>/img/play.svg" alt="Resume Button"></button>
             <div>
-                <button class="restartButton"><img src="./assets/img/restart.svg" alt="Pause Button"></button>
-                <button class="menuButton"><img src="./assets/img/exit.svg" alt="Pause Button"></button>
+                <button class="restartButton"><img src="<%= assetUrl %>/img/restart.svg" alt="Pause Button"></button>
+                <button class="menuButton"><img src="<%= assetUrl %>/img/exit.svg" alt="Pause Button"></button>
             </div>
         </div>
 
@@ -32,8 +38,8 @@
                 <div id="gameOverHighScore">New HighScore</div>
             </div>
             <div>
-                <button class="restartButton"><img src="./assets/img/restart.svg" alt="Pause Button"></button>
-                <button class="menuButton"><img src="./assets/img/home.svg" alt="Pause Button"></button>
+                <button class="restartButton"><img src="<%= assetUrl %>/img/restart.svg" alt="Pause Button"></button>
+                <button class="menuButton"><img src="<%= assetUrl %>/img/home.svg" alt="Pause Button"></button>
             </div>
         </div>
 
@@ -41,23 +47,23 @@
             <div id="time">0hr 0min</div>
             <div id="score">Score: 0</div>
             <div id="highScore">HighScore: 0</div>
-            <div id="pauseButton"><img src="./assets/img/pause.svg" alt="Pause Button"></div>
+            <div id="pauseButton"><img src="<%= assetUrl %>/img/pause.svg" alt="Pause Button"></div>
         </div>
 
         <div id="gameController">
             <div id="movementcontroller">
-                <div id="jumpController" class="controller"><img src="./assets/img/jump.svg" alt="Jump Controller">
+                <div id="jumpController" class="controller"><img src="<%= assetUrl %>/img/jump.svg" alt="Jump Controller">
                 </div>
                 <div>
-                    <div id="leftController" class="controller"><img src="./assets/img/left.svg" alt="Left Controller">
+                    <div id="leftController" class="controller"><img src="<%= assetUrl %>/img/left.svg" alt="Left Controller">
                     </div>
 
-                    <div id="rightController" class="controller"><img src="./assets/img/right.svg"
+                    <div id="rightController" class="controller"><img src="<%= assetUrl %>/img/right.svg"
                             alt="Right Controller"></div>
                 </div>
             </div>
             <div id="shootController" class="controller">
-                <img src="./assets/img/gun.svg" alt="Shoot Controller">
+                <img src="<%= assetUrl %>/img/gun.svg" alt="Shoot Controller">
             </div>
         </div>
     </aside>

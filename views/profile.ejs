@@ -5,20 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | RoboVerr</title>
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/assets/android-chrome-512x512.png">
-    <link rel="apple-touch-icon" href="/assets/android-chrome-192x192.png">
-    <link rel="manifest" href="/assets/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="<%= assetUrl %>/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="<%= assetUrl %>/android-chrome-512x512.png">
+    <link rel="apple-touch-icon" href="<%= assetUrl %>/android-chrome-192x192.png">
+    <link rel="manifest" href="<%= assetUrl %>/manifest.json">
     <meta name="theme-color" content="##000000">
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/profile.css">
-    <script src="./assets/js/index.js" type="module"></script>
+    <link rel="stylesheet" href="<%= assetUrl %>/css/style.css">
+    <link rel="stylesheet" href="<%= assetUrl %>/css/profile.css">
+    <script>
+        // Pass asset URL to JavaScript
+        window.APP_CONFIG = {
+            assetUrl: "<%= assetUrl %>"
+        };
+    </script>
+    <script src="<%= assetUrl %>/js/index.js" type="module"></script>
 </head>
 
 <body>
     <div id="app" class="profile-page">
         <header>
-            <h1 id="logo"><img src="./logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
+            <h1 id="logo"><img src="<%= assetUrl %>/logo.png" alt="RoboVerr logo"><span style="display: none;">RoboVerr</span></h1>
 
             <nav>
                 <a href="/">Home</a>

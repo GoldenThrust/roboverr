@@ -30,6 +30,9 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
+// Get asset URL from environment variable or use default
+const ASSET_URL = process.env.ASSET_URL || '/assets';
+
 // Initialize database
 (async () => {
   try {
@@ -67,6 +70,12 @@ app.use('/assets', express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Add middleware to make assetUrl available to all templates
+app.use((req, res, next) => {
+  res.locals.assetUrl = ASSET_URL;
+  next();
+});
+
 // Apply authentication middleware to all routes
 app.use(isAuthenticated);
 
@@ -103,14 +112,28 @@ app.get('/', async (req, res) => {
   res.render('index', { 
     isAuthenticated: req.isAuthenticated, 
     user: req.user,
-    topScores: topScores
+    topScores: topScores,
+    assetUrl: ASSET_URL // Make asset URL available to template
   });
 });
 
 app.get('/game', (req, res) => {
   res.render('game', { 
     isAuthenticated: req.isAuthenticated, 
-    user: req.user 
+    user: req.user,
+    assetUrl: ASSET_URL // Make asset URL available to template
+  });
+});
+
+app.get('/profile', (req, res) => {
+  if (!req.isAuthenticated) {
+    return res.redirect('/');
+  }
+  
+  res.render('profile', { 
+    isAuthenticated: req.isAuthenticated, 
+    user: req.user,
+    assetUrl: ASSET_URL // Make asset URL available to template
   });
 });
 
@@ -207,4 +230,5 @@ app.get('/api/auth/logout', (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
+  console.log(`Assets will be loaded from: ${ASSET_URL}`);
 });
