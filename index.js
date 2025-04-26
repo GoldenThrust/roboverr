@@ -94,10 +94,7 @@ initializeRedis().then(() => {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'none', 
-      httpOnly: true,
-      maxAge: 24*60*60*1000
+      maxAge: 24 * 60 * 60 * 1000  // 1 day
     }
   };
 
@@ -128,8 +125,6 @@ initializeRedis().then(() => {
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/userinfo.email',
     ];
-
-    console.log('Google State:', state);
 
     return oauth2Client.generateAuthUrl({
       access_type: 'offline',
@@ -180,14 +175,12 @@ initializeRedis().then(() => {
   // Google OAuth routes
   app.get('/auth/google/url', (req, res) => {
     req.session.state = state;
-    console.log(state, req.session.state);
     return res.json({ url: getGoogleAuthURL() });
   });
 
   app.get('/auth/google/callback', async (req, res) => {
     const { code, state, error } = req.query;
 
-    console.log('State mismatch:', state, req.session.state);
     if (error) {
       return res.status(400).json({ error: 'Google authentication failed' });
     } else if (state !== req.session.state) {
