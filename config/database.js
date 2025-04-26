@@ -10,13 +10,15 @@ const sequelize = new Sequelize(
     host: process.env.MYSQL_HOST || 'localhost',
     port: process.env.MYSQL_PORT || 3306,
     dialect: 'mysql',
-    // logging: process.env.NODE_ENV === 'development' ? console.log : false,
     logging: false,
-    dialectOptions: process.env.NODE_ENV === 'production' ? {
-      ssl: {
-        require: true,
-      }
-    } : {}
+    dialectOptions: process.env.NODE_ENV === 'production'
+      ? {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          }
+        }
+      : {}
   }
 );
 
