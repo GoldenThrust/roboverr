@@ -37,7 +37,7 @@ const ASSET_URL = process.env.ASSET_URL || '/assets';
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log('Connected to PostgreSQL database');
+    console.log('Connected to MySQL database');
     
     // Sync models with database (create tables if they don't exist)
     await sequelize.sync();

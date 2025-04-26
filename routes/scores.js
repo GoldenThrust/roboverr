@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
-// import { Op } from 'sequelize';
+import { Op } from 'sequelize';
 import sequelize from '../config/database.js';
 
 const router = express.Router();

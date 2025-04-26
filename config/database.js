@@ -1,21 +1,20 @@
 import { Sequelize } from 'sequelize';
 import 'dotenv/config.js';
 
-// Create a Sequelize instance for PostgreSQL connection
+// Create a Sequelize instance for MySQL connection
 const sequelize = new Sequelize(
-  process.env.POSTGRES_DB || 'roboverr',
-  process.env.POSTGRES_USER || 'postgres',
-  process.env.POSTGRES_PASSWORD || 'postgres',
+  process.env.MYSQL_DB || 'roboverr',
+  process.env.MYSQL_USER || 'root',
+  process.env.MYSQL_PASSWORD || '',
   {
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: process.env.POSTGRES_PORT || 5432,
-    dialect: 'postgres',
+    host: process.env.MYSQL_HOST || 'localhost',
+    port: process.env.MYSQL_PORT || 3306,
+    dialect: 'mysql',
     // logging: process.env.NODE_ENV === 'development' ? console.log : false,
     logging: false,
     dialectOptions: process.env.NODE_ENV === 'production' ? {
       ssl: {
         require: true,
-        // rejectUnauthorized: false
       }
     } : {}
   }
