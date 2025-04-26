@@ -15,7 +15,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Deploy to EC2
+      - name: Deploy to ECS
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.ECS_USER }}@${{ secrets.ECS_HOST }} << 'EOF'
             if ! command -v npm &> /dev/null; then
