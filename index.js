@@ -127,6 +127,8 @@ initializeRedis().then(() => {
       'https://www.googleapis.com/auth/userinfo.email',
     ];
 
+    console.log('Google State:', state);
+
     return oauth2Client.generateAuthUrl({
       access_type: 'offline',
       include_granted_scopes: true,
@@ -176,6 +178,7 @@ initializeRedis().then(() => {
   // Google OAuth routes
   app.get('/auth/google/url', (req, res) => {
     req.session.state = state;
+    console.log(state, req.session.state);
     return res.json({ url: getGoogleAuthURL() });
   });
 
@@ -187,6 +190,7 @@ initializeRedis().then(() => {
     } else if (state !== req.session.state) {
       return res.status(400).json({ error: 'State mismatch. Possible CSRF attack' });
     }
+    console.log('State mismatch:', state, req.session.state);
 
     try {
       const { tokens } = await oauth2Client.getToken(code);
