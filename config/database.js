@@ -11,13 +11,18 @@ const sequelize = new Sequelize(
     port: process.env.MYSQL_PORT || 3306,
     dialect: 'mysql',
     logging: false,
+    // dialectOptions: process.env.NODE_ENV === 'production'
+    //   ? {
+    //       ssl: {
+    //         require: true,
+    //         rejectUnauthorized: false,
+    //       }
+    //     }
+    //   : {},
     dialectOptions: process.env.NODE_ENV === 'production'
       ? {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-          }
-        }
+        ssl: false // Disable SSL for non-SSL compatible connections
+      }
       : {}
   }
 );
