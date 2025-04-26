@@ -9,6 +9,9 @@ import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config.js';
 import crypto from 'crypto';
+// Redis session store
+import { createClient } from 'redis';
+import {RedisStore} from 'connect-redis';
 // Import sequelize instance and models
 import sequelize from './config/database.js';
 // Import routes and middleware
@@ -32,6 +35,30 @@ const corsOptions = {
 
 // Get asset URL from environment variable or use default
 const ASSET_URL = process.env.ASSET_URL || '/assets';
+
+// Configure Redis client with URL
+const redisClient = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+});
+
+// Connect to Redis and handle connection errors
+(async () => {
+  redisClient.on('error', (err) => {
+    console.error('Redis connection error:', err);
+    console.log('Falling back to memory session store');
+  });
+
+  redisClient.on('connect', () => {
+    console.log('Connected to Redis server for session storage');
+  });
+
+  try {
+    await redisClient.connect();
+  } catch (err) {
+    console.error('Failed to connect to Redis:', err);
+    console.log('Falling back to memory session store');
+  }
+})();
 
 // Initialize database
 (async () => {
@@ -59,12 +86,38 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({
+
+// Session configuration with Redis store
+let sessionStore;
+try {
+  if (redisClient.isReady) {
+    sessionStore = new RedisStore({
+      client: redisClient,
+      prefix: process.env.REDIS_PREFIX || 'roboverr_sess:',
+    });
+    console.log('Using Redis for session storage');
+  } else {
+    console.log('Redis not ready, using memory store for sessions');
+  }
+} catch (err) {
+  console.error('Error setting up Redis session store:', err);
+  console.log('Falling back to memory session store');
+}
+
+const sessionConfig = {
+  store: sessionStore,
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
-}));
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production', 
+    maxAge: 24 * 60 * 60 * 1000  // 1 day
+  }
+};
+
+// Apply session middleware
+app.use(session(sessionConfig));
+
 app.use(express.static('public'));
 app.use('/assets', express.static('public'));
 app.set('view engine', 'ejs');
@@ -227,6 +280,31 @@ app.get('/api/auth/logout', (req, res) => {
   res.clearCookie('auth_token');
   res.json({ success: true });
 });
+
+// Graceful shutdown handling
+const gracefulShutdown = async () => {
+  console.log('Shutting down gracefully...');
+  
+  // Close Redis connection
+  if (redisClient.isReady) {
+    await redisClient.disconnect();
+    console.log('Redis connection closed');
+  }
+  
+  // Close database connection
+  try {
+    await sequelize.close();
+    console.log('Database connection closed');
+    process.exit(0);
+  } catch (err) {
+    console.error('Error closing database connection:', err);
+    process.exit(1);
+  }
+};
+
+// Listen for termination signals
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
