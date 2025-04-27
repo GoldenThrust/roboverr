@@ -1,11 +1,11 @@
 class KeyBoard {
   constructor() {
     addEventListener('keydown', (e) => {
-        this[e.key] = true;
+        this[e.code] = true;
     });
 
     addEventListener('keyup', (e) => {
-        this[e.key] = false;
+        this[e.code] = false;
     });
   }
 

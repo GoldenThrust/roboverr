@@ -100,7 +100,7 @@ class Player {
     movement(t) {
         const keys = this.controller;
 
-        if (keys['Enter'] || touchpad.isShooting) {
+        if (keys['Enter'] || keys['Space'] || touchpad.isShooting) {
             this.shootGun(t);
         }
 
